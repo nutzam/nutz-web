@@ -1,4 +1,4 @@
 nutz-web
 ========
 
-A Jetty launcher
+A Jetty launcher + Nutz.Mvc Ajax View
