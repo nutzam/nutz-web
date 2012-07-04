@@ -28,6 +28,8 @@ public class WebServer {
 
 	public WebServer(WebConfig config) {
 		this.dc = config;
+		// 保存到静态变量中
+		Webs.setProp(config.pp);
 	}
 
 	void run() {
