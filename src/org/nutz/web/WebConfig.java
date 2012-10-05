@@ -23,6 +23,11 @@ import org.nutz.lang.util.MultiLineProperties;
 public class WebConfig {
 
     /**
+     * 一个用来区分测试数据库和生产数据库的后缀。在测试用例运行前，修改这个变量即可
+     */
+    public static String JUNIT_DB_SUFFIX = "";
+
+    /**
      * 配置文件的键名: 应用的根路径，比如 "~/workspace/git/danoo/strato/domain/ROOT"
      */
     private static final String APP_ROOT = "app-root";
