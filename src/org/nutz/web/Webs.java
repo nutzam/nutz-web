@@ -6,8 +6,11 @@ import org.nutz.ioc.impl.PropertiesProxy;
  * 一些常量和帮助函数的集合
  * 
  * @author zozoh(zozohtnt@gmail.com)
+ * @author pw
  */
-public abstract class Webs {
+public class Webs {
+
+	private Webs() {}
 
 	/**
 	 * 在会话中，表示当前用户的键
