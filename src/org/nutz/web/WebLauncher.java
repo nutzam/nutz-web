@@ -9,10 +9,15 @@ import org.nutz.log.Logs;
  * 一个 Web 服务的启动器
  * 
  * @author zozoh(zozohtnt@gmail.com)
+ * @pw
  */
 public class WebLauncher {
 
 	private static final Log log = Logs.get();
+
+	public static void main(String[] args) {
+		start(args);
+	}
 
 	/**
 	 * 执行启动的主函数，接受一个参数，为 web 服务器的配置文件路径。如果没有这个参数，默认在 classpath 下寻找
@@ -31,7 +36,7 @@ public class WebLauncher {
 	 * @param args
 	 *            接受一个参数作为 web 服务器的配置文件路径
 	 */
-	public static void main(String[] args) {
+	public static void start(String... args) {
 		String path = Strings.sBlank(Lang.first(args), Webs.CONF_PATH);
 
 		log.infof("launch by '%s'", path);
