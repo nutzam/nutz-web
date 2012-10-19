@@ -15,6 +15,11 @@ public abstract class Webs {
     public static final String ME = "me";
 
     /**
+     * 用户密码加密方式在 attributes 里的名称，值可能为 "MD5|SHA1" 等
+     */
+    public static final String PWD_ENCRYPT = "PWD_ENCRYPT";
+
+    /**
      * 默认配置文件路径
      */
     public static final String CONF_PATH = "web.properties";

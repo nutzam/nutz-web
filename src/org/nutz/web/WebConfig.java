@@ -84,6 +84,10 @@ public class WebConfig {
 
     // ================================================= 一些通用方法
 
+    public void set(String key, String val) {
+        pp.put(key, val);
+    }
+
     public String get(String key) {
         return pp.get(key);
     }
