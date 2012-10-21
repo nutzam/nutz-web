@@ -16,7 +16,14 @@ public class GodKey {
 
     private String god_key_file_my;
 
+    // 一般应用使用一个超级用户（上帝）
     private String key;
+
+    // 超级用户 亚当，权限与上帝一致，可以查看，修改
+    private String adam;
+
+    // 次超级用户 夏娃，权限是可以查看
+    private String eve;
 
     /**
      * 在当前用户目录下，生成.nutz_web_god_key文件。
@@ -40,13 +47,25 @@ public class GodKey {
     }
 
     public boolean match(String key) {
-        if (null == this.key || null == key)
-            return false;
-        return this.key.equals(key);
+        return keyMatch(this.key, key);
     }
 
     public String getKey() {
         return key;
+    }
+
+    public boolean isAdam(String key) {
+        return keyMatch(this.adam, key);
+    }
+
+    public boolean isEve(String key) {
+        return keyMatch(this.eve, key);
+    }
+
+    private boolean keyMatch(String tKey, String yKey) {
+        if (null == tKey || null == yKey)
+            return false;
+        return tKey.equals(yKey);
     }
 
     public void clear() {
