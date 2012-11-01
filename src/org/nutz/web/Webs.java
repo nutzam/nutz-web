@@ -10,7 +10,7 @@ import org.nutz.ioc.impl.PropertiesProxy;
  */
 public class Webs {
 
-	private Webs() {}
+    private Webs() {}
 
     /**
      * 在会话中，表示当前用户的键
@@ -31,6 +31,11 @@ public class Webs {
      * 默认的 RS 属性名
      */
     public static final String RS = "rs";
+
+    /**
+     * 扫描器出来的结果存放的属性名
+     */
+    public static final String SCAN_LINKS = "links";
 
     /**
      * 所有配置信息

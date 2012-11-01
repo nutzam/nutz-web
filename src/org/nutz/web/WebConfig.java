@@ -11,9 +11,11 @@ import org.nutz.lang.Files;
 import org.nutz.lang.Lang;
 import org.nutz.lang.Streams;
 import org.nutz.lang.Strings;
+import org.nutz.lang.segment.Segments;
 import org.nutz.lang.util.Disks;
 import org.nutz.lang.util.FileVisitor;
 import org.nutz.lang.util.MultiLineProperties;
+import org.nutz.web.jsp.RsScaner;
 
 /**
  * 封装 web.properies 的读取，你的应用可以继承这个类，实现自己更专有的配置文件读取类
@@ -92,6 +94,13 @@ public class WebConfig {
         return pp.get(key);
     }
 
+    public String check(String key) {
+        String val = get(key);
+        if (null == val)
+            throw Lang.makeThrow("Ioc.$conf expect property '%s'", key);
+        return val;
+    }
+
     public String get(String key, String defaultValue) {
         return pp.get(key, defaultValue);
     }
@@ -133,6 +142,31 @@ public class WebConfig {
 
     public List<String> getKeys() {
         return pp.getKeys();
+    }
+
+    // ================================================= 获取路径扫描器
+    /**
+     * 创建一个资源扫描器，它需要下列属性:
+     * <ul>
+     * <li><b>app-rs</b> : 资源的网络访问前缀
+     * <li><b>app-rs-home</b> : 资源的硬盘所在目录
+     * <li><b>app-rs-css</b> : CSS 的 HTML 代码模板
+     * <li><b>app-rs-script</b> : JS 的 HTML 代码模板
+     * <li><b>app-rs-scan-path</b> : 资源的扫描路径
+     * </ul>
+     * 
+     * @return 资源扫描器
+     */
+    public RsScaner getScaner() {
+        // 生成对象
+        RsScaner jrs = new RsScaner();
+        jrs.setRs(check("app-rs"));
+        jrs.setRsHome(check("app-rs-home"));
+        jrs.setSegCss(Segments.create(check("app-rs-css")));
+        jrs.setSegJs(Segments.create(check("app-rs-script")));
+        jrs.setScanPaths(Strings.splitIgnoreBlank(check("app-rs-scan-path"), "\n"));
+        jrs.setForce("force".equalsIgnoreCase(get("app-rs-scan","force")));
+        return jrs;
     }
 
     /**
