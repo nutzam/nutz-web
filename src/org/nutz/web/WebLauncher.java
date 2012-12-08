@@ -48,4 +48,15 @@ public class WebLauncher {
 		log.info("Server is down!");
 	}
 
+	public static void startNutOnlyWebapp(String... args) {
+        String path = Strings.sBlank(Lang.first(args), Webs.CONF_PATH);
+
+        log.infof("launch by '%s'", path);
+
+        final WebServer server = new NutOnlyWebServer(new WebConfig(path));
+
+        server.run();
+
+        log.info("Server is down!");
+    }
 }

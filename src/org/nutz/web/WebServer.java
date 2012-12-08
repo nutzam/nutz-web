@@ -1,6 +1,7 @@
 package org.nutz.web;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.webapp.WebAppContext;
@@ -22,32 +23,36 @@ public class WebServer {
 
 	private static final Log log = Logs.get();
 
-	private WebConfig dc;
+	protected WebConfig dc;
 
-	private Server server;
+	protected Server server;
 
 	public WebServer(WebConfig config) {
 		this.dc = config;
 		// 保存到静态变量中
 		Webs.setProp(config.pp);
 	}
+	
+	protected void prepare() throws IOException {
+	    server = new Server(dc.getAppPort());
+        // 设置应用上下文
+        File root = Files.findFile(dc.getAppRoot());
+        String warUrlString = root.toURI().toURL().toExternalForm();
+        WebAppContext appContext = new WebAppContext(warUrlString, "/");
+        appContext.setExtraClasspath(dc.getAppClasspath());
+        server.setHandler(appContext);
+    }
 
 	void run() {
 		try {
-			server = new Server(dc.getAppPort());
-			// 设置应用上下文
-			File root = Files.findFile(dc.getAppRoot());
-			String warUrlString = root.toURI().toURL().toExternalForm();
-			WebAppContext appContext = new WebAppContext(warUrlString, "/");
-			appContext.setExtraClasspath(dc.getAppClasspath());
-			server.setHandler(appContext);
+			prepare();
 
 			// 启动
 			server.start();
 
 			// 自省一下,判断自己是否能否正常访问
 			Response resp = Http.get("http://127.0.0.1:" + dc.getAppPort());
-			if (resp == null || resp.getStatus() >= 400) {
+			if (resp == null || resp.getStatus() >= 500) {
 				log.error("Self-Testing fail !!Server start fail?!!");
 				server.stop();
 				return;
@@ -55,6 +60,11 @@ public class WebServer {
 
 			if (log.isInfoEnabled())
 				log.info("Server is up!");
+			
+			if (dc.getAdminPort() == 0) {
+			    log.info("Disable admin port listen");
+			    return;
+			}
 
 			// 管理
 			if (log.isInfoEnabled())
