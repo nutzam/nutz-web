@@ -81,7 +81,7 @@ public class WebConfig {
     }
 
     public int getAdminPort() {
-        return pp.getInt(ADMIN_PORT);
+        return pp.getInt(ADMIN_PORT, pp.getInt(APP_PORT)+1);
     }
 
     // ================================================= 一些通用方法

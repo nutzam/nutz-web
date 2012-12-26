@@ -62,11 +62,6 @@ public class WebServer {
 
 			if (log.isInfoEnabled())
 				log.info("Server is up!");
-			
-			if (dc.getAdminPort() == 0) {
-			    log.info("Disable admin port listen");
-			    return;
-			}
 
 			// 管理
 			if (log.isInfoEnabled())
