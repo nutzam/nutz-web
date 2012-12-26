@@ -37,6 +37,8 @@ public class WebServer {
 	    server = new Server(dc.getAppPort());
         // 设置应用上下文
         File root = Files.findFile(dc.getAppRoot());
+        if (root == null || !root.exists())
+        	throw new IllegalArgumentException("root: "+dc.getAppRoot() +" not exist!");
         String warUrlString = root.toURI().toURL().toExternalForm();
         WebAppContext appContext = new WebAppContext(warUrlString, "/");
         appContext.setExtraClasspath(dc.getAppClasspath());

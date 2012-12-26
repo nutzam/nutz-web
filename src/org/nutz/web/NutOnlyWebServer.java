@@ -31,8 +31,4 @@ public class NutOnlyWebServer extends WebServer {
         server.setHandler(ctx);
     }
     
-    public void run() {
-        super.run();
-    }
-    
 }
