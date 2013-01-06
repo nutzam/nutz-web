@@ -78,6 +78,10 @@ public class Webs {
             return new WebException(e).key(e.getClass().getName()).reason(e.toString());
         }
 
+        public static WebException create(Throwable e, String key) {
+            return new WebException(e).key(key);
+        }
+
     }
 
 }
