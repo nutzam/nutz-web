@@ -22,21 +22,23 @@ import org.nutz.web.Webs;
  */
 public class AjaxView implements View {
 
-    private JsonFormat jf;
+    private boolean uc;
 
     public AjaxView() {
-        // 一般模式(开发)
-        jf = JsonFormat.nice();
+        uc = false;
     }
 
     public AjaxView(String useCompact) {
-        boolean uc = Strings.isBlank(useCompact) ? false : Boolean.parseBoolean(useCompact);
+        uc = Strings.isBlank(useCompact) ? false : Boolean.parseBoolean(useCompact);
+    }
+
+    public JsonFormat getJsonFormat() {
         if (uc) {
             // 紧凑模式(生产)
-            jf = JsonFormat.compact();
+            return JsonFormat.compact();
         } else {
             // 一般模式(开发)
-            jf = JsonFormat.nice();
+            return JsonFormat.nice();
         }
     }
 
@@ -64,7 +66,7 @@ public class AjaxView implements View {
         }
 
         // 写入返回
-        Mvcs.write(resp, re, jf);
+        Mvcs.write(resp, re, getJsonFormat());
     }
 
 }
