@@ -54,7 +54,7 @@ public class AjaxView implements View {
         else if (obj instanceof Throwable) {
             WebException err = Webs.Err.wrap((Throwable) obj);
             String msg = Mvcs.getMessage(req, err.getKey());
-            re = Ajax.fail().setMsg(msg).setData(err);
+            re = Ajax.fail().setErrCode(err.getKey()).setMsg(msg).setData(err.getReason());
         }
         // AjaxReturn
         else if (obj instanceof AjaxReturn) {

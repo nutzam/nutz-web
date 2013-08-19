@@ -2,35 +2,45 @@ package org.nutz.web.ajax;
 
 public class AjaxReturn {
 
-	boolean ok;
-	String msg;
-	Object data;
+    boolean ok;
+    String errCode;
+    String msg;
+    Object data;
 
-	public boolean isOk() {
-		return ok;
-	}
+    public boolean isOk() {
+        return ok;
+    }
 
-	public String getMsg() {
-		return msg;
-	}
+    public String getErrCode() {
+        return errCode;
+    }
 
-	public Object getData() {
-		return data;
-	}
+    public String getMsg() {
+        return msg;
+    }
 
-	public AjaxReturn setOk(boolean ok) {
-		this.ok = ok;
-		return this;
-	}
+    public Object getData() {
+        return data;
+    }
 
-	public AjaxReturn setMsg(String msg) {
-		this.msg = msg;
-		return this;
-	}
+    public AjaxReturn setOk(boolean ok) {
+        this.ok = ok;
+        return this;
+    }
 
-	public AjaxReturn setData(Object data) {
-		this.data = data;
-		return this;
-	}
+    public AjaxReturn setErrCode(String errCode) {
+        this.errCode = errCode;
+        return this;
+    }
+
+    public AjaxReturn setMsg(String msg) {
+        this.msg = msg;
+        return this;
+    }
+
+    public AjaxReturn setData(Object data) {
+        this.data = data;
+        return this;
+    }
 
 }
