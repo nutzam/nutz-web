@@ -1,6 +1,7 @@
 package org.nutz.web;
 
 import org.nutz.ioc.impl.PropertiesProxy;
+import org.nutz.lang.Strings;
 
 /**
  * 一些常量和帮助函数的集合
@@ -53,6 +54,50 @@ public class Webs {
      */
     public static PropertiesProxy getProp() {
         return WEB_PROP;
+    }
+
+    /**
+     * 本函数用来确保入口函数中的各个字符串型参数不为空
+     * 
+     * @param s
+     *            要检查的字符串
+     * @param key
+     *            如果出错，错误的键
+     */
+    public static void NoBlank(String s, String key) {
+        if (Strings.isBlank(s)) {
+            throw Webs.Err.create(key, s);
+        }
+    }
+
+    /**
+     * 本函数用来确保入口函数中的各个字符串型参数不为空
+     * 
+     * @param s
+     *            要检查的字符串
+     * @param key
+     *            如果出错，错误的键
+     * @param reason
+     *            出错的原因
+     */
+    public static void NoBlank(String s, String key, Object reason) {
+        if (Strings.isBlank(s)) {
+            throw Webs.Err.create(key, reason);
+        }
+    }
+
+    /**
+     * 本函数用来确保入口函数中的参数不为 null
+     * 
+     * @param obj
+     *            要检查的对象
+     * @param key
+     *            如果出错，错误的键
+     */
+    public static void NoNull(Object obj, String key) {
+        if (null == obj) {
+            throw Webs.Err.create(key);
+        }
     }
 
     /**
