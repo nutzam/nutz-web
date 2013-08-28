@@ -1,104 +1,91 @@
 package org.nutz.web.query;
 
+import org.nutz.lang.Strings;
+import org.nutz.mvc.annotation.Param;
+
 /**
- * 封装从 Web Client 来的字符串
+ * 封装从 Web Client 来的查询字符串，它接受如下格式的名值对或者 JSON 字符串
+ * 
+ * <pre>
+ *  kwd   : "xxxxxx",
+ *  pn    : 1,         // 当前页，<=0 被认为非法，强制等于 1
+ *  pgsz  : 50,        // 一页多少数据，如果 <1 则强制等于 50
+ *  order : "ASC:$name,..."    // 根据字段来排序
+ * </pre>
  * 
  * @author zozoh(zozohtnt@gmail.com)
  */
-public abstract class WebQuery {
+public class WebQuery {
 
-    public WebQuery() {
-        this.order = getDefaultOrder();
-        this.sortBy = getDefaultSortBy();
+    @Param("kwd")
+    private String keyword;
+
+    @Param("pn")
+    private int pageNumber;
+
+    @Param("pgsz")
+    private int pageSize;
+
+    @Param("order")
+    private String order;
+
+    private WebOrderField[] orderFields;
+
+    public boolean hasKeyword() {
+        return !Strings.isBlank(keyword);
     }
 
-    protected abstract String getDefaultSortBy();
-
-    protected SORT getDefaultOrder() {
-        return SORT.ASC;
-    }
-
-    protected String keyword;
-
-    private SORT order;
-
-    private String sortBy;
-
-    /**
-     * 小于等于0, 无视
-     */
-    private int limit;
-
-    /**
-     * 小于等于0, 无视
-     */
-    private int skip;
-
-    public WebQuery sortBy(String fieldName) {
-        sortBy = fieldName;
-        return this;
-    }
-
-    public WebQuery asc() {
-        order = SORT.ASC;
-        return this;
-    }
-
-    public WebQuery desc() {
-        order = SORT.DESC;
-        return this;
-    }
-
-    public WebQuery limit(int limit) {
-        this.limit = limit;
-        return this;
-    }
-
-    public WebQuery skip(int skip) {
-        this.skip = skip;
-        return this;
-    }
-
-    public int limit() {
-        return this.limit;
-    }
-
-    public int skip() {
-        return this.skip;
-    }
-
-    public boolean isASC() {
-        return SORT.ASC == order;
-    }
-
-    public boolean isDESC() {
-        return SORT.DESC == order;
+    public char[] getKeywordChars() {
+        if (null != keyword)
+            return keyword.toCharArray();
+        return new char[0];
     }
 
     public String getKeyword() {
         return keyword;
     }
 
-    public void setKeyword(String keyword) {
-        this.keyword = keyword;
-        parseKeyword();
+    public void setKeyword(String kwd) {
+        this.keyword = kwd;
     }
 
-    protected abstract void parseKeyword();
+    public int getPageNumber() {
+        return pageNumber;
+    }
 
-    public SORT getOrder() {
+    public void setPageNumber(int pn) {
+        this.pageNumber = pn;
+    }
+
+    public int getPageSize() {
+        return pageSize;
+    }
+
+    public void setPageSize(int pgsz) {
+        this.pageSize = pgsz;
+    }
+
+    public String getOrder() {
         return order;
     }
 
-    public void setOrder(SORT order) {
+    public void setOrder(String order) {
         this.order = order;
+        String[] ss = Strings.splitIgnoreBlank(order, ",");
+        if (null != ss) {
+            orderFields = new WebOrderField[ss.length];
+            for (int i = 0; i < ss.length; i++) {
+                orderFields[i] = WebOrderField.valueOf(ss[i]);
+            }
+        }
     }
 
-    public String getSortBy() {
-        return sortBy;
+    public WebOrderField[] getOrderFields() {
+        return orderFields;
     }
 
-    public void setSortBy(String sortBy) {
-        this.sortBy = sortBy;
+    public void setOrderFields(WebOrderField[] orderFields) {
+        this.orderFields = orderFields;
     }
+
 }
