@@ -18,18 +18,18 @@ import org.nutz.mvc.annotation.Param;
 public class WebQuery {
 
     @Param("kwd")
-    private String keyword;
+    protected String keyword;
 
     @Param("pn")
-    private int pageNumber;
+    protected int pageNumber;
 
     @Param("pgsz")
-    private int pageSize;
+    protected int pageSize;
 
     @Param("order")
-    private String order;
+    protected String order;
 
-    private WebOrderField[] orderFields;
+    protected WebOrderField[] orderFields;
 
     public boolean hasKeyword() {
         return !Strings.isBlank(keyword);
@@ -65,8 +65,22 @@ public class WebQuery {
         this.pageSize = pgsz;
     }
 
+    public int offset() {
+        return (pageNumber - 1) * pageSize;
+    }
+
     public String getOrder() {
         return order;
+    }
+
+    public WebQuery normalize(int minPn, int maxPgsz, String dftOrder) {
+        pageNumber = Math.max(pageNumber, minPn);
+        pageSize = pageSize > 0 ? Math.min(maxPgsz, pageSize) : maxPgsz / 2;
+
+        if (Strings.isBlank(order)) {
+            this.setOrder(dftOrder);
+        }
+        return this;
     }
 
     public void setOrder(String order) {
@@ -86,6 +100,10 @@ public class WebQuery {
 
     public void setOrderFields(WebOrderField[] orderFields) {
         this.orderFields = orderFields;
+    }
+
+    public boolean hasOrder() {
+        return null != orderFields && orderFields.length > 0;
     }
 
 }

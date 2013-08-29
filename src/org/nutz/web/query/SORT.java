@@ -3,12 +3,33 @@ package org.nutz.web.query;
 public enum SORT {
 
     /**
-     * 从旧到新
+     * 从小到大
      */
-    ASC,
+    ASC(1),
     /**
-     * 从新到旧
+     * 从大到小
      */
-    DESC
-    
+    DESC(-1);
+
+    private int value = 0;
+
+    SORT(int v) {
+        this.value = v;
+    }
+
+    public static SORT valueOf(int v) {
+        switch (v) {
+        case 1:
+            return ASC;
+        case -1:
+            return DESC;
+        default:
+            return ASC;
+        }
+    }
+
+    public int value() {
+        return value;
+    }
+
 }

@@ -12,7 +12,7 @@ public class WebOrderField {
      * @return 排序字段对象
      */
     public static WebOrderField valueOf(String str) {
-        String[] ss = Strings.splitIgnoreBlank(str,":");
+        String[] ss = Strings.splitIgnoreBlank(str, ":");
         if (ss == null || ss.length == 0)
             return null;
 
@@ -38,6 +38,14 @@ public class WebOrderField {
 
     public void setSort(SORT sort) {
         this.sort = sort;
+    }
+
+    public boolean asc() {
+        return SORT.ASC == sort;
+    }
+
+    public boolean desc() {
+        return SORT.DESC == sort;
     }
 
     public String getName() {
