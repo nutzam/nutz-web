@@ -30,7 +30,7 @@ public class WebConfig {
     public static String JUNIT_DB_SUFFIX = "";
 
     /**
-     * 配置文件的键名: 应用的根路径，比如 "~/workspace/git/danoo/strato/domain/ROOT"
+     * 配置文件的键名: 应用的根路径，比如 "~/nutz/web/ROOT"
      */
     private static final String APP_ROOT = "app-root";
 
@@ -40,7 +40,7 @@ public class WebConfig {
     private static final String APP_PORT = "app-port";
 
     /**
-     * 配置文件的键名: 应用静态资源的地址前缀，比如 "http://localhost/strato"，或者 "/rs" 等
+     * 配置文件的键名: 应用静态资源的地址前缀，比如 "http://localhost/nutz"，或者 "/rs" 等
      */
     private static final String APP_RS = "app-rs";
 
@@ -81,7 +81,7 @@ public class WebConfig {
     }
 
     public int getAdminPort() {
-        return pp.getInt(ADMIN_PORT, pp.getInt(APP_PORT)+1);
+        return pp.getInt(ADMIN_PORT, pp.getInt(APP_PORT) + 1);
     }
 
     // ================================================= 一些通用方法
@@ -165,7 +165,7 @@ public class WebConfig {
         jrs.setSegCss(Segments.create(check("app-rs-css")));
         jrs.setSegJs(Segments.create(check("app-rs-script")));
         jrs.setScanPaths(Strings.splitIgnoreBlank(check("app-rs-scan-path"), "\n"));
-        jrs.setForce("force".equalsIgnoreCase(get("app-rs-scan","force")));
+        jrs.setForce("force".equalsIgnoreCase(get("app-rs-scan", "force")));
         return jrs;
     }
 

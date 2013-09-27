@@ -43,6 +43,11 @@ public class Webs {
      */
     private static PropertiesProxy WEB_PROP = null;
 
+    /**
+     * 设置当前web应该的配置文件
+     * 
+     * @param wp
+     */
     protected static void setProp(PropertiesProxy wp) {
         WEB_PROP = wp;
     }

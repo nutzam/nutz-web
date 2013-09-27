@@ -23,7 +23,7 @@ public class GodKey {
     private String adam;
 
     // 次超级用户 夏娃，权限是可以查看
-    private String eve;
+    private String eva;
 
     /**
      * 在当前用户目录下，生成.nutz_web_god_key文件。
@@ -59,7 +59,7 @@ public class GodKey {
     }
 
     public boolean isEve(String key) {
-        return keyMatch(this.eve, key);
+        return keyMatch(this.eva, key);
     }
 
     private boolean keyMatch(String tKey, String yKey) {
