@@ -2,28 +2,13 @@
 # 以下是 web.prpoerties 要求的几个配置项目，必须正确配置
 #==================================================================
 # 应用的ＷebContent目录
-app-root=~/YourWebApp/ROOT
+app-root=${app-root-dir}
 # 应用的端口号 
-app-port=8080
+app-port=${app-port}
 # 存放静态配置文件的路径，比如可以是 http://xxx.xxx.xx/xx ，这样你就能把你的静态
 # 资源集中在一个更高效的 web 服务器上。默认为空串，即你应用的根目录
 app-rs=
 # 应用的类路径
 app-classpath:
 # 应该管理端口（一般用来关闭服务）
-admin-port=8081
-
-
-# 以下是 导入配置项 可以通过 include 的方式导入其他 properties 文件
-# 这里的配置信息可以通过Webs.getProp()方法得到（PropertiesProxy对象）
-#==================================================================
-# 特殊键 "$include" 可以导入一批新的配置文件，一行一个，直到遇到 "注释行" 才结束include
-# 例如：
-# $include:
-# db.properties
-# sys.properties
-# # end_include
-
-
-# 其他的配置项目，根据你的应用具体情况，可以随意添加
-#==================================================================
+admin-port=${app-admin-port}
