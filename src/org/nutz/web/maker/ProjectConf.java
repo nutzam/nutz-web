@@ -1,5 +1,8 @@
 package org.nutz.web.maker;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class ProjectConf {
 
     public String pdir;
@@ -11,6 +14,8 @@ public class ProjectConf {
     public int app_port = 8080;
 
     public int app_admin_port = 8081;
+
+    public Map<String, String> modules = new HashMap<String, String>();
 
     public static ProjectConf New() {
         return new ProjectConf();
@@ -38,6 +43,11 @@ public class ProjectConf {
 
     public ProjectConf pnm(String pnm) {
         this.pnm = pnm;
+        return this;
+    }
+
+    public ProjectConf addModule(String nm, String at) {
+        modules.put(nm, at);
         return this;
     }
 }

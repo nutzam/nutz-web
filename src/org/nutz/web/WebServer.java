@@ -21,85 +21,85 @@ import org.nutz.log.Logs;
  */
 public class WebServer {
 
-	private static final Log log = Logs.get();
+    private static final Log log = Logs.get();
 
-	protected WebConfig dc;
+    protected WebConfig dc;
 
-	protected Server server;
+    protected Server server;
 
-	public WebServer(WebConfig config) {
-		this.dc = config;
-		// 保存到静态变量中
-		Webs.setProp(config.pp);
-	}
-	
-	protected void prepare() throws IOException {
-	    server = new Server(dc.getAppPort());
+    public WebServer(WebConfig config) {
+        this.dc = config;
+        // 保存到静态变量中
+        Webs.setProp(config.pp);
+    }
+
+    protected void prepare() throws IOException {
+        server = new Server(dc.getAppPort());
         // 设置应用上下文
         File root = Files.findFile(dc.getAppRoot());
         if (root == null || !root.exists())
-        	throw new IllegalArgumentException("root: "+dc.getAppRoot() +" not exist!");
+            throw new IllegalArgumentException("root: " + dc.getAppRoot() + " not exist!");
         String warUrlString = root.toURI().toURL().toExternalForm();
         WebAppContext appContext = new WebAppContext(warUrlString, "/");
         appContext.setExtraClasspath(dc.getAppClasspath());
         server.setHandler(appContext);
     }
 
-	void run() {
-		try {
-			prepare();
+    void run() {
+        try {
+            prepare();
 
-			// 启动
-			server.start();
+            // 启动
+            server.start();
 
-			// 自省一下,判断自己是否能否正常访问
-			Response resp = Http.get("http://127.0.0.1:" + dc.getAppPort());
-			if (resp == null || resp.getStatus() >= 500) {
-				log.error("Self-Testing fail !!Server start fail?!!");
-				server.stop();
-				return;
-			}
+            // 自省一下,判断自己是否能否正常访问
+            Response resp = Http.get("http://127.0.0.1:" + dc.getAppPort());
+            if (resp == null || resp.getStatus() >= 500) {
+                log.error("Self-Testing fail !!Server start fail?!!");
+                server.stop();
+                return;
+            }
 
-			if (log.isInfoEnabled())
-				log.info("Server is up!");
+            if (log.isInfoEnabled())
+                log.info("Server is up!");
 
-			// 管理
-			if (log.isInfoEnabled())
-				log.infof("Create admin port at %d", dc.getAdminPort());
-			Sockets.localListenOne(dc.getAdminPort(), "stop", new SocketAction() {
-				public void run(SocketContext context) {
-					if (null != server)
-						try {
-							server.stop();
-						}
-						catch (Exception e4stop) {
-							if (log.isErrorEnabled())
-								log.error("Fail to stop!", e4stop);
-						}
-					Sockets.close();
-				}
-			});
+            // 管理
+            if (log.isInfoEnabled())
+                log.infof("Create admin port at %d", dc.getAdminPort());
+            Sockets.localListenOne(dc.getAdminPort(), "stop", new SocketAction() {
+                public void run(SocketContext context) {
+                    if (null != server)
+                        try {
+                            server.stop();
+                        }
+                        catch (Exception e4stop) {
+                            if (log.isErrorEnabled())
+                                log.error("Fail to stop!", e4stop);
+                        }
+                    Sockets.close();
+                }
+            });
 
-		}
-		catch (Throwable e) {
-			if (log.isWarnEnabled())
-				log.warn("Unknow error", e);
-		}
+        }
+        catch (Throwable e) {
+            if (log.isWarnEnabled())
+                log.warn("Unknow error", e);
+        }
 
-	}
+    }
 
-	@Override
-	protected void finalize() throws Throwable {
-		if (null != server)
-			try {
-				server.stop();
-			}
-			catch (Throwable e) {
-				if (log.isErrorEnabled())
-					log.error("Fail to stop!", e);
-				throw e;
-			}
-		super.finalize();
-	}
+    @Override
+    protected void finalize() throws Throwable {
+        if (null != server)
+            try {
+                server.stop();
+            }
+            catch (Throwable e) {
+                if (log.isErrorEnabled())
+                    log.error("Fail to stop!", e);
+                throw e;
+            }
+        super.finalize();
+    }
 
 }
