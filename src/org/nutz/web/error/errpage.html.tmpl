@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Excepiton...</title>
+        <style type="text/css" media="screen">
+            .ex-info {
+                font-size: 28px;
+                color: #f00;
+            }
+            .ex-stack {
+                font-size: 13px;                
+                margin: 3px 0px 3px 25px;
+            }
+            .ex-stack div {
+                display: inline-block;
+            }
+            .ex-stack .stack-at {
+                font-size: 17px;
+                font-weight: bold;
+                margin-left: 5px;
+                margin-right: 5px;
+                color: #003399
+            }
+            /*.c0 {
+                color: #003399;   
+            }
+            .c1 {
+                color: #FFCC99;   
+            }
+            .c2 {
+                color: #FFCCCC;   
+            }
+            .c3 {
+                color: #333399;   
+            }
+            .c4 {
+                color: #CCCC00;   
+            }
+            .c5 {
+                color: #003300;   
+            }
+            .c6 {
+                color: #003399;   
+            }
+            .c7 {
+                color: #99CC33;   
+            }
+            .c8 {
+                color: #99CCFF;   
+            }*/
+            .ex-stack .stack-method {
+                font-size: 17px;
+                margin-left: 5px;
+                margin-right: 5px;
+                text-decoration: underline;
+                color: #080;
+            }
+            .ex-stack .stack-method-line {
+                font-size: 17px;
+                margin-left: 5px;
+                margin-right: 5px;
+                color: #f00;
+            }
+            .br {
+                width: 90%;
+                height: 2px;
+                background: #000;
+                margin: 10px 3px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="ex-info">${exInfo}</div>
+        <div class="br"></div>
+        ${exStack}
+        <div class="br"></div>
+    </body>
+</html>
