@@ -1,5 +1,7 @@
 package org.nutz.web.query;
 
+import org.nutz.json.Json;
+import org.nutz.json.JsonFormat;
 import org.nutz.lang.Strings;
 import org.nutz.mvc.annotation.Param;
 
@@ -106,4 +108,26 @@ public class WebQuery {
         return null != orderFields && orderFields.length > 0;
     }
 
+    private transient String _source;
+    
+    public boolean equals(Object obj) {
+    	if (obj == null)
+    		return false;
+    	if (obj instanceof WebQuery) {
+    		if (this._source == null)
+    			this._source = Json.toJson(this, JsonFormat.compact());
+    		WebQuery other = (WebQuery)obj;
+    		if (other._source == null)
+    			other._source = Json.toJson(other, JsonFormat.compact());
+    		return this._source.equals(other._source);
+    	} else {
+    		return false;
+    	}
+    }
+    
+    public int hashCode() {
+    	if (this._source == null)
+    		this._source = Json.toJson(this, JsonFormat.compact());
+    	return this._source.hashCode();
+    }
 }
