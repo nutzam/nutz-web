@@ -51,6 +51,11 @@ public class WebQuery {
         this.keyword = kwd;
     }
 
+    public WebQuery keywordf(String fmt, Object... args) {
+        this.keyword = String.format(fmt, args);
+        return this;
+    }
+
     public int getPageNumber() {
         return pageNumber;
     }

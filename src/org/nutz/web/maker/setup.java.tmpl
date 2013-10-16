@@ -1,0 +1,22 @@
+package ${pkg};
+
+import org.nutz.log.Log;
+import org.nutz.log.Logs;
+import org.nutz.mvc.NutConfig;
+import org.nutz.mvc.Setup;
+
+public class ${pnm}Setup implements Setup {
+
+    private final static Log log = Logs.get();
+
+    @Override
+    public void init(NutConfig nc) {
+        log.infof("${pnm} Version : %s", ${pnm}.VERSION);
+    }
+
+    @Override
+    public void destroy(NutConfig nc) {
+
+	}
+
+}

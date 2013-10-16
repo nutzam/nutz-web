@@ -2,27 +2,42 @@ package org.nutz.web.query;
 
 import java.util.LinkedList;
 
-import org.nutz.dao.QueryResult;
-
 /**
  * 描述了一个分页查询结果
  * 
  * @author zozoh(zozohtnt@gmail.com)
  */
-public class WebQueryResult {
+public class WebQueryResult<T> {
 
+    /**
+     * 当前第几页
+     */
     public int pn;
 
+    /**
+     * 一页最多有多少记录
+     */
     public int pgsz;
 
+    /**
+     * 【选】 一共多少页
+     */
     public int pgcount;
 
+    /**
+     * 【选】一共有多少记录
+     */
     public int rcount;
 
-    public LinkedList<Object> list;
+    /**
+     * 【选】是否还有更多的记录
+     */
+    public boolean hasMore;
+
+    public LinkedList<T> list;
 
     public WebQueryResult() {
-        list = new LinkedList<Object>();
+        list = new LinkedList<T>();
     }
 
     public WebQueryResult(WebQuery q) {
@@ -31,16 +46,7 @@ public class WebQueryResult {
         pgsz = q.getPageSize();
     }
 
-    public WebQueryResult(QueryResult qr) {
-        this();
-        pn = qr.getPager().getPageNumber();
-        pgsz = qr.getPager().getPageSize();
-        pgcount = qr.getPager().getPageCount();
-        rcount = qr.getPager().getRecordCount();
-        list.addAll(qr.getList());
-    }
-
-    public WebQueryResult add(Object o) {
+    public WebQueryResult<T> add(T o) {
         list.add(o);
         return this;
     }
