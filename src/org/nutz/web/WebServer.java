@@ -40,8 +40,11 @@ public class WebServer {
         if (root == null || !root.exists())
             throw new IllegalArgumentException("root: " + dc.getAppRoot() + " not exist!");
         String warUrlString = root.toURI().toURL().toExternalForm();
+        log.debugf("war path : %s", warUrlString);
         WebAppContext appContext = new WebAppContext(warUrlString, "/");
         appContext.setExtraClasspath(dc.getAppClasspath());
+        // appContext.setResourceBase(warUrlString);
+        // appContext.addServlet(DefaultServlet.class, "/rs/*");
         server.setHandler(appContext);
     }
 

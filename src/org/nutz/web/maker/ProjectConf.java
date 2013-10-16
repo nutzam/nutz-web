@@ -5,6 +5,8 @@ import java.util.Map;
 
 public class ProjectConf {
 
+    public String jetty_ver;
+
     public String pdir;
 
     public String pkg;

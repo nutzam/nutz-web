@@ -20,11 +20,11 @@ import org.nutz.log.Logs;
  * @author pw
  * 
  */
-public class Maker {
+public class WebMaker {
 
     private static Log log = Logs.get();
 
-    private Maker() {}
+    private WebMaker() {}
 
     /**
      * 在制定目录生成一个符合nutz-web项目的web工程
@@ -73,6 +73,7 @@ public class Maker {
 
         mkFile(root, "ROOT/WEB-INF/web", "xml", _webXML(pc));
         mkFile(root, "ROOT/index", "html", _indexJSP());
+        mkFile(root, "ROOT/404", "html", _404JSP());
         // 结束
         log.info("project has been created");
     }
@@ -109,7 +110,7 @@ public class Maker {
     // 各个文件生成
 
     private static Segment _readTmpl(String tnm) {
-        String tmpl = Streams.readAndClose(new InputStreamReader(Maker.class.getResourceAsStream(tnm)));
+        String tmpl = Streams.readAndClose(new InputStreamReader(WebMaker.class.getResourceAsStream(tnm)));
         CharSegment cs = new CharSegment(tmpl);
         return cs;
     }
@@ -179,6 +180,10 @@ public class Maker {
 
     private static String _indexJSP() {
         return _readTmpl("index.jsp.tmpl").render().toString();
+    }
+
+    private static String _404JSP() {
+        return _readTmpl("404.html.tmpl").render().toString();
     }
 
     private static String _webXML(ProjectConf pc) {
