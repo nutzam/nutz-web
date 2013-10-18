@@ -65,7 +65,7 @@ public class WebConfig {
     protected PropertiesProxy pp;
 
     public String getAppRoot() {
-        return pp.get(APP_ROOT);
+        return Disks.absolute(pp.get(APP_ROOT));
     }
 
     public int getAppPort() {
