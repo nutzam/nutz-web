@@ -38,7 +38,9 @@ public class WebServer {
         // 设置应用上下文
         File root = Files.findFile(dc.getAppRoot());
         if (root == null || !root.exists())
-            throw new IllegalArgumentException("root: " + dc.getAppRoot() + " not exist!");
+            throw new IllegalArgumentException("root: "
+                                               + dc.getAppRoot()
+                                               + " not exist!");
         String warUrlString = root.toURI().toURL().toExternalForm();
         log.debugf("war path : %s", warUrlString);
         WebAppContext appContext = new WebAppContext(warUrlString, "/");
@@ -69,19 +71,22 @@ public class WebServer {
             // 管理
             if (log.isInfoEnabled())
                 log.infof("Create admin port at %d", dc.getAdminPort());
-            Sockets.localListenOne(dc.getAdminPort(), "stop", new SocketAction() {
-                public void run(SocketContext context) {
-                    if (null != server)
-                        try {
-                            server.stop();
-                        }
-                        catch (Exception e4stop) {
-                            if (log.isErrorEnabled())
-                                log.error("Fail to stop!", e4stop);
-                        }
-                    Sockets.close();
-                }
-            });
+            Sockets.localListenOne(dc.getAdminPort(),
+                                   "stop",
+                                   new SocketAction() {
+                                       public void run(SocketContext context) {
+                                           if (null != server)
+                                               try {
+                                                   server.stop();
+                                               }
+                                               catch (Exception e4stop) {
+                                                   if (log.isErrorEnabled())
+                                                       log.error("Fail to stop!",
+                                                                 e4stop);
+                                               }
+                                           Sockets.close();
+                                       }
+                                   });
 
         }
         catch (Throwable e) {
