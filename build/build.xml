@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="nutz-vfs" default="run" basedir=".">
+	<description>
+       Nutz-vfs library build file
+    </description>
+	<!-- set global properties for this build -->
+	<property environment="env" />
+
+	<property name="JAVA_HOME" value="${env.JAVA_HOME}" />
+	<property name="DEPS" value="${env.DEPS}" />
+	<property name="DEST" value="${env.OUTPUT}" />
+	<property name="PROJECT_HOME" value="${env.PROJECT_HOME}" />
+
+	<property name="SRC" value="${PROJECT_HOME}/build/src" />
+	<property name="TMP" value="${PROJECT_HOME}/build/temp" />
+
+	<property name="JDK_VERSION" value="1.6" />
+
+
+	<property name="v" value="1.0-b140509a" />
+
+	<path id="CLASSPATH">
+		<fileset dir="${DEPS}" casesensitive="no">
+			<include name="*.jar" />
+		</fileset>
+		<pathelement location="${JAVA_HOME}/lib/rt.jar" />
+	</path>
+
+	<target name="init">
+		<mkdir dir="${SRC}" />
+		<copy todir="${SRC}">
+			<fileset dir="${PROJECT_HOME}/src" includes="**/*.java" />
+		</copy>
+		<mkdir dir="${TMP}" />
+	</target>
+
+	<target name="compile" depends="init">
+		<javac srcdir="${SRC}" destdir="${TMP}"
+			debuglevel="lines,vars,source" debug="true" 
+			source="${JDK_VERSION}" target="${JDK_VERSION}" 
+			encoding="UTF-8" listfiles="off"
+			includeantruntime="false"
+			fork="true">
+			<compilerarg value="-Xlint:all" />
+			<classpath refid="CLASSPATH" />
+		</javac>
+		<copy todir="${TMP}">
+			<fileset dir="${PROJECT_HOME}/src" excludes="**/*.java" />
+		</copy>
+	</target>
+
+	<target name="jar" depends="compile">
+		<echo message="TMP: ${TMP}" />
+		<jar destfile="${DEST}/nutzam-${v}.jar" 
+			 basedir="${TMP}"
+			 includes="**" />
+	</target>
+
+	<target name="run" depends="jar">
+		<delete dir="${TMP}" />
+		<delete dir="${SRC}" />
+	</target>
+</project>
