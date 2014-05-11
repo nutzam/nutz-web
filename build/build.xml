@@ -17,7 +17,7 @@
 	<property name="JDK_VERSION" value="1.6" />
 
 
-	<property name="v" value="1.0-b140509a" />
+	<property name="v" value="1.5" />
 
 	<path id="CLASSPATH">
 		<fileset dir="${DEPS}" casesensitive="no">
