@@ -49,7 +49,7 @@
 		<jar destfile="${DEST}/nutz-web-${v}.jar" 
 			 basedir="${TMP}"
 			 includes="**" />
-		<jar destfile="${DEST}/nutz-web-source-${v}.jar"
+		<jar destfile="${DEST}/nutz-web-${v}-source.jar"
 					 basedir="${SRC}"
 				     includes="**"/>
 	</target>
