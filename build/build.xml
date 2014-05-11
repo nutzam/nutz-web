@@ -51,7 +51,7 @@
 
 	<target name="jar" depends="compile">
 		<echo message="TMP: ${TMP}" />
-		<jar destfile="${DEST}/nutzam-${v}.jar" 
+		<jar destfile="${DEST}/nut-web-${v}.jar" 
 			 basedir="${TMP}"
 			 includes="**" />
 	</target>
