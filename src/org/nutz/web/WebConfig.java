@@ -1,20 +1,13 @@
 package org.nutz.web;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
 import java.util.List;
 
 import org.nutz.castor.Castors;
 import org.nutz.ioc.impl.PropertiesProxy;
-import org.nutz.lang.Files;
 import org.nutz.lang.Lang;
-import org.nutz.lang.Streams;
 import org.nutz.lang.Strings;
 import org.nutz.lang.segment.Segments;
 import org.nutz.lang.util.Disks;
-import org.nutz.lang.util.FileVisitor;
-import org.nutz.lang.util.MultiLineProperties;
 import org.nutz.web.jsp.RsScaner;
 
 /**
@@ -164,7 +157,8 @@ public class WebConfig {
         jrs.setRsHome(check("app-rs-home"));
         jrs.setSegCss(Segments.create(check("app-rs-css")));
         jrs.setSegJs(Segments.create(check("app-rs-script")));
-        jrs.setScanPaths(Strings.splitIgnoreBlank(check("app-rs-scan-path"), "\n"));
+        jrs.setScanPaths(Strings.splitIgnoreBlank(check("app-rs-scan-path"),
+                                                  "\n"));
         jrs.setForce("force".equalsIgnoreCase(get("app-rs-scan", "force")));
         return jrs;
     }
@@ -180,46 +174,7 @@ public class WebConfig {
         this.pp = new PropertiesProxy();
         this.pp.setPaths(path);
         // 预处理键 : 引入其他的配置文件
-        String str = this.pp.get(MACRO_INCLUDE);
-        if (!Strings.isBlank(str)) {
-            String[] ss = Strings.splitIgnoreBlank(str, "\n");
-            for (String s : ss) {
-                File f = Files.findFile(s);
-                if (null == f) {
-                    throw Lang.makeThrow("Fail to found path '%s' in CLASSPATH or File System!", s);
-                }
-                // 如果是一个包，引用全部 Files
-                if (f.isDirectory()) {
-                    Disks.visitFile(f, new FileVisitor() {
-                        public void visit(File f) {
-                            _join_propertiesFile(f);
-                        }
-                    }, new FileFilter() {
-                        public boolean accept(File f) {
-                            if (f.isDirectory())
-                                return !f.isHidden() && !f.getName().startsWith(".");
-                            return f.getName().endsWith(".properties");
-                        }
-                    });
-                }
-                // 否则引用单个文件
-                else {
-                    _join_propertiesFile(f);
-                }
-            }
-        }
-    }
-
-    private void _join_propertiesFile(File f) {
-        MultiLineProperties mp = new MultiLineProperties();
-        try {
-            mp.load(Streams.fileInr(f));
-        }
-        catch (IOException e) {
-            throw Lang.wrapThrow(e);
-        }
-        for (String key : mp.keys())
-            pp.put(key, mp.get(key));
+        this.pp.joinByKey(MACRO_INCLUDE);
     }
 
 }
