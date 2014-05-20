@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<taglib xmlns="http://java.sun.com/xml/ns/j2ee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd"
+    version="2.0">
+    
+  <description>Nutz-web TLD </description>
+  <display-name>Nutz-web-TLD</display-name>
+  <tlib-version>1.1</tlib-version>
+  <short-name>z</short-name>
+  <uri>http://nutzam.com/nutz-web/jsp/jstl/z</uri>
+
+  <tag>
+    <description>Show message from request object</description>
+    <name>msg</name>
+    <tag-class>org.nutz.web.jsp.tld.MsgTag</tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+        <description>The Message Key</description>
+        <name>key</name>
+        <required>true</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+
+</taglib>

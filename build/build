@@ -1,0 +1,7 @@
+#! /bin/sh
+export JAVA_HOME=~/opt/java/jdk
+export DEPS=~/nutz/deps/nutz-web
+export OUTPUT=~/nutz/output
+export PROJECT_HOME=~/workspace/git/github/nutz-web
+
+. ~/bin/java-build
