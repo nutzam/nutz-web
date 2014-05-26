@@ -32,32 +32,32 @@ public class WebConfig {
     /**
      * 配置文件的键名: 应用的根路径，比如 "~/nutz/web/ROOT"
      */
-    private static final String APP_ROOT = "app-root";
+    public static final String APP_ROOT = "app-root";
 
     /**
      * 配置文件的键名: 应用监听的端口，比如 8080
      */
-    private static final String APP_PORT = "app-port";
+    public static final String APP_PORT = "app-port";
 
     /**
      * 配置文件的键名: 应用静态资源的地址前缀，比如 "http://localhost/nutz"，或者 "/rs" 等
      */
-    private static final String APP_RS = "app-rs";
+    public static final String APP_RS = "app-rs";
 
     /**
      * 配置文件的键名: 应用的类路径，可多行
      */
-    private static final String APP_CLASSPATH = "app-classpath";
+    public static final String APP_CLASSPATH = "app-classpath";
 
     /**
      * 配置文件的键名: 应用的管理端口，比如 8081
      */
-    private static final String ADMIN_PORT = "admin-port";
+    public static final String ADMIN_PORT = "admin-port";
 
     /**
      * 配置文件的键名: 引入更多的配置文件
      */
-    private static final String MACRO_INCLUDE = "$include";
+    public static final String MACRO_INCLUDE = "$include";
 
     /**
      * 存放所有的属性
