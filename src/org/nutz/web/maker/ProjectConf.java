@@ -3,53 +3,95 @@ package org.nutz.web.maker;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.nutz.lang.Strings;
+
 public class ProjectConf {
 
-    public String jetty_ver;
+    String jetty_ver;
+    String path;
+    String pkg;
+    String pnm;
+    int app_port = 8080;
+    int app_admin_port = 8081;
 
-    public String pdir;
+    Map<String, String> modules = new HashMap<String, String>();
 
-    public String pkg;
-
-    public String pnm;
-
-    public int app_port = 8080;
-
-    public int app_admin_port = 8081;
-
-    public Map<String, String> modules = new HashMap<String, String>();
-
-    public static ProjectConf New() {
+    /**
+     * @return 一个新的配置项
+     */
+    public static ProjectConf NEW() {
         return new ProjectConf();
     }
 
-    public ProjectConf dir(String pdir) {
-        this.pdir = pdir;
+    /**
+     * 设定工程目录
+     * 
+     * @param path
+     * @return
+     */
+    public ProjectConf path(String path) {
+        this.path = path;
         return this;
     }
 
+    /**
+     * 设定最外层包名
+     * 
+     * @param pkg
+     * @return
+     */
     public ProjectConf pkg(String pkg) {
-        this.pkg = pkg;
+        this.pkg = pkg.toLowerCase();
+        if (-1 != pkg.lastIndexOf(".")) {
+            this.pnm = Strings.upperFirst(pkg.substring(pkg.lastIndexOf(".") + 1));
+        }
         return this;
     }
 
+    /**
+     * 设定端口
+     * 
+     * @param port
+     * @return
+     */
     public ProjectConf appPort(int port) {
         this.app_port = port;
         return this;
     }
 
-    public ProjectConf appAdminPort(int port) {
+    /**
+     * 设定管理端口
+     * 
+     * @param port
+     * @return
+     */
+    public ProjectConf adminPort(int port) {
         this.app_admin_port = port;
         return this;
     }
 
-    public ProjectConf pnm(String pnm) {
-        this.pnm = pnm;
-        return this;
-    }
-
+    /**
+     * 给出各个http模块名称与对应的路径
+     * 
+     * @param nm
+     * @param at
+     * @return
+     */
     public ProjectConf addModule(String nm, String at) {
         modules.put(nm, at);
         return this;
     }
+
+    /**
+     * 给出各个http模块名称与对应的路径
+     * 
+     * @param nm
+     * @param at
+     * @return
+     */
+    public ProjectConf addModule(String nm) {
+        modules.put(nm, nm);
+        return this;
+    }
+
 }

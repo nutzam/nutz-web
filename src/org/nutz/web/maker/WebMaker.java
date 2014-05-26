@@ -36,7 +36,7 @@ public class WebMaker {
         log.info("project config :");
         log.info("\n" + Json.toJson(pc));
         // 生成对应目录
-        File root = new File(Disks.absolute(pc.pdir));
+        File root = new File(Disks.absolute(pc.path));
         Files.createDirIfNoExists(root);
         String pkgPath = "src/" + pc.pkg;
         mkDir(root, "src");
@@ -49,31 +49,26 @@ public class WebMaker {
         String rootPath = mkDir(root, "ROOT");
         mkDir(root, "ROOT/WEB-INF");
         // 生成对应文件
-        mkFile(root, pkgPath + "/" + Strings.upperFirst(pc.pnm), "java", _project(pc));
-        mkFile(root, pkgPath + "/" + Strings.upperFirst(pc.pnm) + "Launcher", "java", _launcher(pc));
-        mkFile(root,
-               pkgPath + "/" + Strings.upperFirst(pc.pnm) + "MainModule",
-               "java",
-               _mainModule(pc));
+        mkFile(root, pkgPath + "/" + pc.pnm, "java", _project(pc));
+        mkFile(root, pkgPath + "/" + pc.pnm + "Launcher", "java", _launcher(pc));
+        mkFile(root, pkgPath + "/" + pc.pnm + "MainModule", "java", _mainModule(pc));
         if (!pc.modules.isEmpty()) {
             for (String mnm : pc.modules.keySet()) {
                 String at = Strings.sBlank(pc.modules.get(mnm), mnm);
-                mkFile(root,
-                       pkgPath + "/module/" + Strings.upperFirst(mnm) + "Module",
-                       "java",
-                       _subModule(pc, mnm, at));
+                mnm = Strings.upperFirst(mnm);
+                mkFile(root, pkgPath + "/module/" + mnm + "Module", "java", _subModule(pc, mnm, at));
             }
         }
-        mkFile(root, pkgPath + "/" + Strings.upperFirst(pc.pnm) + "Setup", "java", _setup(pc));
-        mkFile(root, pkgPath + "/" + Strings.upperFirst(pc.pnm) + "Config", "java", _conf(pc));
+        mkFile(root, pkgPath + "/" + pc.pnm + "Setup", "java", _setup(pc));
+        mkFile(root, pkgPath + "/" + pc.pnm + "Config", "java", _conf(pc));
 
-        mkFile(root, "conf/ioc/" + pc.pnm, "js", _ioc(pc));
+        mkFile(root, "conf/ioc/core", "js", _ioc(pc));
         mkFile(root, "conf/log4j", "properties", _log4j());
         mkFile(root, "conf/web", "properties", _webProperties(pc, rootPath));
 
         mkFile(root, "ROOT/WEB-INF/web", "xml", _webXML(pc));
-        mkFile(root, "ROOT/index", "html", _indexJSP());
-        mkFile(root, "ROOT/404", "html", _404JSP());
+        mkFile(root, "ROOT/index", "html", _pageIndex());
+        mkFile(root, "ROOT/404", "html", _page404());
         // 结束
         log.info("project has been created");
     }
@@ -118,14 +113,14 @@ public class WebMaker {
     private static String _project(ProjectConf pc) {
         Segment cs = _readTmpl("project.java.tmpl");
         cs.add("pkg", pc.pkg);
-        cs.add("pnm", Strings.upperFirst(pc.pnm));
+        cs.add("pnm", pc.pnm);
         return cs.render().toString();
     }
 
     private static String _launcher(ProjectConf pc) {
         Segment cs = _readTmpl("launcher.java.tmpl");
         cs.add("pkg", pc.pkg);
-        cs.add("pnm", Strings.upperFirst(pc.pnm));
+        cs.add("pnm", pc.pnm);
         return cs.render().toString();
     }
 
@@ -145,21 +140,21 @@ public class WebMaker {
     private static String _ioc(ProjectConf pc) {
         Segment cs = _readTmpl("ioc.js.tmpl");
         cs.add("pkg", pc.pkg);
-        cs.add("pnm", Strings.upperFirst(pc.pnm));
+        cs.add("pnm", pc.pnm);
         return cs.render().toString();
     }
 
     private static String _conf(ProjectConf pc) {
         Segment cs = _readTmpl("conf.java.tmpl");
         cs.add("pkg", pc.pkg);
-        cs.add("pnm", Strings.upperFirst(pc.pnm));
+        cs.add("pnm", pc.pnm);
         return cs.render().toString();
     }
 
     private static String _mainModule(ProjectConf pc) {
         Segment cs = _readTmpl("mainModule.java.tmpl");
         cs.add("pkg", pc.pkg);
-        cs.add("pnm", Strings.upperFirst(pc.pnm));
+        cs.add("pnm", pc.pnm);
         return cs.render().toString();
     }
 
@@ -167,29 +162,29 @@ public class WebMaker {
         Segment cs = _readTmpl("subModule.java.tmpl");
         cs.add("pkg", pc.pkg);
         cs.add("at", at);
-        cs.add("mnm", Strings.upperFirst(mnm));
+        cs.add("mnm", mnm);
         return cs.render().toString();
     }
 
     private static String _setup(ProjectConf pc) {
         Segment cs = _readTmpl("setup.java.tmpl");
         cs.add("pkg", pc.pkg);
-        cs.add("pnm", Strings.upperFirst(pc.pnm));
+        cs.add("pnm", pc.pnm);
         return cs.render().toString();
     }
 
-    private static String _indexJSP() {
-        return _readTmpl("index.jsp.tmpl").render().toString();
+    private static String _pageIndex() {
+        return _readTmpl("index.html.tmpl").render().toString();
     }
 
-    private static String _404JSP() {
+    private static String _page404() {
         return _readTmpl("404.html.tmpl").render().toString();
     }
 
     private static String _webXML(ProjectConf pc) {
         Segment cs = _readTmpl("web.xml.tmpl");
         cs.add("pkg", pc.pkg);
-        cs.add("pnm", Strings.upperFirst(pc.pnm));
+        cs.add("pnm", pc.pnm);
         return cs.render().toString();
     }
 
