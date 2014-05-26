@@ -67,8 +67,8 @@ public class WebMaker {
         mkFile(root, "conf/web", "properties", _webProperties(pc, rootPath));
 
         mkFile(root, "ROOT/WEB-INF/web", "xml", _webXML(pc));
-        mkFile(root, "ROOT/index", "html", _indexJSP());
-        mkFile(root, "ROOT/404", "html", _404JSP());
+        mkFile(root, "ROOT/index", "html", _pageIndex());
+        mkFile(root, "ROOT/404", "html", _page404());
         // 结束
         log.info("project has been created");
     }
@@ -173,11 +173,11 @@ public class WebMaker {
         return cs.render().toString();
     }
 
-    private static String _indexJSP() {
-        return _readTmpl("index.jsp.tmpl").render().toString();
+    private static String _pageIndex() {
+        return _readTmpl("index.html.tmpl").render().toString();
     }
 
-    private static String _404JSP() {
+    private static String _page404() {
         return _readTmpl("404.html.tmpl").render().toString();
     }
 
