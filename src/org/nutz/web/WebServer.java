@@ -30,7 +30,7 @@ public class WebServer {
     public WebServer(WebConfig config) {
         this.dc = config;
         // 保存到静态变量中
-        Webs.setProp(config.pp);
+        Webs.setProp(config);
     }
 
     protected void prepare() throws IOException {
