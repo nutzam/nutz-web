@@ -11,7 +11,7 @@ import org.nutz.web.jsp.RsScaner;
  * 
  * @author zozoh(zozohtnt@gmail.com)
  */
-public class WebConfig extends PropertiesProxy{
+public class WebConfig extends PropertiesProxy {
 
     /**
      * 一个用来区分测试数据库和生产数据库的后缀。在测试用例运行前，修改这个变量即可
@@ -44,10 +44,14 @@ public class WebConfig extends PropertiesProxy{
     public static final String ADMIN_PORT = "admin-port";
 
     /**
+     * Jetty 默认参数集合，如果为空，则忽略
+     */
+    public static final String APP_DEFAULTS_DESCRIPTOR = "app-defaults-descriptor";
+
+    /**
      * 配置文件的键名: 引入更多的配置文件
      */
     public static final String MACRO_INCLUDE = "$include";
-
 
     public String getAppRoot() {
         return Disks.absolute(get(APP_ROOT));
@@ -67,6 +71,14 @@ public class WebConfig extends PropertiesProxy{
 
     public int getAdminPort() {
         return getInt(ADMIN_PORT, getInt(APP_PORT) + 1);
+    }
+
+    public String getAppDefaultsDescriptor() {
+        return get(APP_DEFAULTS_DESCRIPTOR);
+    }
+
+    public boolean hasAppDefaultsDescriptor() {
+        return has(APP_DEFAULTS_DESCRIPTOR);
     }
 
     // ================================================= 获取路径扫描器
