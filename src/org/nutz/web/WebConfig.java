@@ -1,10 +1,6 @@
 package org.nutz.web;
 
-import java.util.List;
-
-import org.nutz.castor.Castors;
 import org.nutz.ioc.impl.PropertiesProxy;
-import org.nutz.lang.Lang;
 import org.nutz.lang.Strings;
 import org.nutz.lang.segment.Segments;
 import org.nutz.lang.util.Disks;
@@ -15,7 +11,7 @@ import org.nutz.web.jsp.RsScaner;
  * 
  * @author zozoh(zozohtnt@gmail.com)
  */
-public class WebConfig {
+public class WebConfig extends PropertiesProxy {
 
     /**
      * 一个用来区分测试数据库和生产数据库的后缀。在测试用例运行前，修改这个变量即可
@@ -48,93 +44,41 @@ public class WebConfig {
     public static final String ADMIN_PORT = "admin-port";
 
     /**
+     * Jetty 默认参数集合，如果为空，则忽略
+     */
+    public static final String APP_DEFAULTS_DESCRIPTOR = "app-defaults-descriptor";
+
+    /**
      * 配置文件的键名: 引入更多的配置文件
      */
     public static final String MACRO_INCLUDE = "$include";
 
-    /**
-     * 存放所有的属性
-     */
-    protected PropertiesProxy pp;
-
     public String getAppRoot() {
-        return Disks.absolute(pp.get(APP_ROOT));
+        return Disks.absolute(get(APP_ROOT));
     }
 
     public int getAppPort() {
-        return pp.getInt(APP_PORT);
+        return getInt(APP_PORT);
     }
 
     public String getAppRs() {
-        return pp.get(APP_RS);
+        return get(APP_RS);
     }
 
     public String getAppClasspath() {
-        return pp.get(APP_CLASSPATH);
+        return get(APP_CLASSPATH);
     }
 
     public int getAdminPort() {
-        return pp.getInt(ADMIN_PORT, pp.getInt(APP_PORT) + 1);
+        return getInt(ADMIN_PORT, getInt(APP_PORT) + 1);
     }
 
-    // ================================================= 一些通用方法
-
-    public void set(String key, String val) {
-        pp.put(key, val);
+    public String getAppDefaultsDescriptor() {
+        return get(APP_DEFAULTS_DESCRIPTOR);
     }
 
-    public String get(String key) {
-        return pp.get(key);
-    }
-
-    public String check(String key) {
-        String val = get(key);
-        if (null == val)
-            throw Lang.makeThrow("Ioc.$conf expect property '%s'", key);
-        return val;
-    }
-
-    public String get(String key, String defaultValue) {
-        return pp.get(key, defaultValue);
-    }
-
-    public boolean getBoolean(String key) {
-        return getBoolean(key, false);
-    }
-
-    public boolean getBoolean(String key, boolean dfval) {
-        String val = pp.get(key);
-        if (Strings.isBlank(val))
-            return dfval;
-        return Castors.me().castTo(val, Boolean.class);
-    }
-
-    public int getInt(String key) {
-        return pp.getInt(key);
-    }
-
-    public int getInt(String key, int dfval) {
-        return pp.getInt(key, dfval);
-    }
-
-    public long getLong(String key) {
-        return pp.getLong(key);
-    }
-
-    public long getLong(String key, long dfval) {
-        return pp.getLong(key, dfval);
-    }
-
-    public String getTrim(String key) {
-        return pp.getTrim(key);
-    }
-
-    public String getTrim(String key, String defaultValue) {
-        return pp.getTrim(key, defaultValue);
-    }
-
-    public List<String> getKeys() {
-        return pp.getKeys();
+    public boolean hasAppDefaultsDescriptor() {
+        return has(APP_DEFAULTS_DESCRIPTOR);
     }
 
     // ================================================= 获取路径扫描器
@@ -170,11 +114,9 @@ public class WebConfig {
      *            配置文件路径
      */
     public WebConfig(String path) {
-        // 开始解析
-        this.pp = new PropertiesProxy();
-        this.pp.setPaths(path);
+        super(path);
         // 预处理键 : 引入其他的配置文件
-        this.pp.joinByKey(MACRO_INCLUDE);
+        joinByKey(MACRO_INCLUDE);
     }
 
 }

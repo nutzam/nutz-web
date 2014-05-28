@@ -30,7 +30,7 @@ public class WebServer {
     public WebServer(WebConfig config) {
         this.dc = config;
         // 保存到静态变量中
-        Webs.setProp(config.pp);
+        Webs.setProp(config);
     }
 
     protected void prepare() throws IOException {
@@ -43,11 +43,14 @@ public class WebServer {
                                                + " not exist!");
         String warUrlString = root.toURI().toURL().toExternalForm();
         log.debugf("war path : %s", warUrlString);
-        WebAppContext appContext = new WebAppContext(warUrlString, "/");
-        appContext.setExtraClasspath(dc.getAppClasspath());
-        // appContext.setResourceBase(warUrlString);
-        // appContext.addServlet(DefaultServlet.class, "/rs/*");
-        server.setHandler(appContext);
+        WebAppContext wac = new WebAppContext(warUrlString, "/");
+        if (dc.hasAppDefaultsDescriptor()) {
+            wac.setDefaultsDescriptor(dc.getAppDefaultsDescriptor());
+        }
+        wac.setExtraClasspath(dc.getAppClasspath());
+        // wac.setResourceBase(warUrlString);
+        // wac.addServlet(DefaultServlet.class, "/rs/*");
+        server.setHandler(wac);
     }
 
     void run() {
