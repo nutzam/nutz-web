@@ -32,11 +32,12 @@ public class WebMaker {
      * @param pc
      */
     public static void newProject(ProjectConf pc) {
+        pc.path = Disks.normalize(pc.path);
         // 打印信息
         log.info("project config :");
         log.info("\n" + Json.toJson(pc));
         // 生成对应目录
-        File root = new File(Disks.absolute(pc.path));
+        File root = Files.createDirIfNoExists(pc.path);
         Files.createDirIfNoExists(root);
         String pkgPath = "src/" + pc.pkg;
         mkDir(root, "src");
@@ -44,6 +45,7 @@ public class WebMaker {
         mkDir(root, pkgPath + "/module");
         mkDir(root, "conf");
         mkDir(root, "conf/ioc");
+        mkDir(root, "lib");
         mkDir(root, "test");
         mkDir(root, "test/" + pc.pkg);
         String rootPath = mkDir(root, "ROOT");
@@ -68,6 +70,8 @@ public class WebMaker {
 
         mkFile(root, "ROOT/WEB-INF/web", "xml", _webXML(pc));
         mkFile(root, "ROOT/index", "html", _pageIndex());
+        mkFile(root, "run", "sh", _runSH(pc));
+
         mkFile(root, "ROOT/404", "html", _page404());
         // 结束
         log.info("project has been created");
@@ -179,6 +183,14 @@ public class WebMaker {
 
     private static String _page404() {
         return _readTmpl("404.html.tmpl").render().toString();
+    }
+
+    private static String _runSH(ProjectConf pc) {
+        Segment cs = _readTmpl("run.sh");
+        cs.add("pkg", pc.pkg);
+        cs.add("pnm", pc.pnm);
+        cs.add("phome", pc.path);
+        return cs.render().toString();
     }
 
     private static String _webXML(ProjectConf pc) {
