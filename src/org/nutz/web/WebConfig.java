@@ -1,6 +1,7 @@
 package org.nutz.web;
 
 import org.nutz.ioc.impl.PropertiesProxy;
+import org.nutz.lang.Lang;
 import org.nutz.lang.Strings;
 import org.nutz.lang.segment.Segments;
 import org.nutz.lang.util.Disks;
@@ -101,8 +102,7 @@ public class WebConfig extends PropertiesProxy {
         jrs.setRsHome(check("app-rs-home"));
         jrs.setSegCss(Segments.create(check("app-rs-css")));
         jrs.setSegJs(Segments.create(check("app-rs-script")));
-        jrs.setScanPaths(Strings.splitIgnoreBlank(check("app-rs-scan-path"),
-                                                  "\n"));
+        jrs.setScanPaths(Strings.splitIgnoreBlank(check("app-rs-scan-path"), "\n"));
         jrs.setForce("force".equalsIgnoreCase(get("app-rs-scan", "force")));
         return jrs;
     }
@@ -117,6 +117,13 @@ public class WebConfig extends PropertiesProxy {
         super(path);
         // 预处理键 : 引入其他的配置文件
         joinByKey(MACRO_INCLUDE);
+    }
+
+    public String check(String key) {
+        String val = get(key);
+        if (null == val)
+            throw Lang.makeThrow("Ioc.$conf expect property '%s'", key);
+        return val;
     }
 
 }
