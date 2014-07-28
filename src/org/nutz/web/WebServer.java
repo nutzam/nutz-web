@@ -34,14 +34,19 @@ public class WebServer {
     }
 
     protected void prepare() throws IOException {
+        if (dc.getAppPort() <= 0) {
+            dc.set(WebConfig.APP_PORT, "80");
+        }
         server = new Server(dc.getAppPort());
         // 设置应用上下文
+        String warUrlString = null;
         File root = Files.findFile(dc.getAppRoot());
-        if (root == null || !root.exists())
-            throw new IllegalArgumentException("root: "
-                                               + dc.getAppRoot()
-                                               + " not exist!");
-        String warUrlString = root.toURI().toURL().toExternalForm();
+        if (root == null || !root.exists()) {
+            log.warnf("root: %s not exist!", dc.getAppRoot() == null ? "[]" : dc.getAppRoot());
+            warUrlString = this.getClass().getClassLoader().getResource("").toExternalForm();
+        } else {
+            warUrlString = root.toURI().toURL().toExternalForm();
+        }
         log.debugf("war path : %s", warUrlString);
         WebAppContext wac = new WebAppContext(warUrlString, "/");
         if (dc.hasAppDefaultsDescriptor()) {
@@ -74,22 +79,19 @@ public class WebServer {
             // 管理
             if (log.isInfoEnabled())
                 log.infof("Create admin port at %d", dc.getAdminPort());
-            Sockets.localListenOne(dc.getAdminPort(),
-                                   "stop",
-                                   new SocketAction() {
-                                       public void run(SocketContext context) {
-                                           if (null != server)
-                                               try {
-                                                   server.stop();
-                                               }
-                                               catch (Exception e4stop) {
-                                                   if (log.isErrorEnabled())
-                                                       log.error("Fail to stop!",
-                                                                 e4stop);
-                                               }
-                                           Sockets.close();
-                                       }
-                                   });
+            Sockets.localListenOne(dc.getAdminPort(), "stop", new SocketAction() {
+                public void run(SocketContext context) {
+                    if (null != server)
+                        try {
+                            server.stop();
+                        }
+                        catch (Exception e4stop) {
+                            if (log.isErrorEnabled())
+                                log.error("Fail to stop!", e4stop);
+                        }
+                    Sockets.close();
+                }
+            });
 
         }
         catch (Throwable e) {
