@@ -8,6 +8,7 @@ import org.eclipse.jetty.webapp.WebAppContext;
 import org.nutz.http.Http;
 import org.nutz.http.Response;
 import org.nutz.lang.Files;
+import org.nutz.lang.Lang;
 import org.nutz.lang.socket.SocketAction;
 import org.nutz.lang.socket.SocketContext;
 import org.nutz.lang.socket.Sockets;
@@ -43,7 +44,7 @@ public class WebServer {
         File root = Files.findFile(dc.getAppRoot());
         if (root == null || !root.exists()) {
             log.warnf("root: %s not exist!", dc.getAppRoot() == null ? "[]" : dc.getAppRoot());
-            warUrlString = this.getClass().getClassLoader().getResource("").toExternalForm();
+            warUrlString = Lang.runRootPath();
         } else {
             warUrlString = root.toURI().toURL().toExternalForm();
         }
