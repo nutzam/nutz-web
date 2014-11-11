@@ -5,7 +5,7 @@
 	<artifactId>nutz-web</artifactId>
 	<packaging>jar</packaging>
 	<name>Nutz-Web</name>
-	<version>1.b.49</version>
+	<version>1.b.50</version>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
@@ -60,14 +60,18 @@
 		<dependency>
 			<groupId>org.nutz</groupId>
 			<artifactId>nutz</artifactId>
-			<version>1.b.49</version>
+			<version>1.b.50</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jetty.aggregate</groupId>
 			<artifactId>jetty-all-server</artifactId>
-			<version>7.6.4.v20120524</version>
-			<scope>provided</scope>
+			<version>7.6.15.v20140411</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty.orbit</groupId>
+			<artifactId>javax.servlet.jsp</artifactId>
+			<version>2.1.0.v201105211820</version>
 		</dependency>
 	</dependencies>
 
@@ -106,11 +110,12 @@
 			<plugin>
 				<groupId>org.mortbay.jetty</groupId>
 				<artifactId>jetty-maven-plugin</artifactId>
-				<version>7.6.4.v20120524</version>
+				<version>7.6.15.v20140411</version>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.17</version>
 				<configuration>
 					<forkMode>once</forkMode>
 					<argLine>-Dfile.encoding=UTF-8</argLine>
@@ -119,6 +124,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-gpg-plugin</artifactId>
+				<version>1.5</version>
 				<executions>
 					<execution>
 						<id>sign-artifacts</id>
