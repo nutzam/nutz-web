@@ -22,6 +22,10 @@ public class WebException extends RuntimeException {
         return key;
     }
 
+    public boolean isKey(String key) {
+        return null != key && null != this.key && key.equals(this.key);
+    }
+
     public WebException key(String key) {
         this.key = key;
         return this;
