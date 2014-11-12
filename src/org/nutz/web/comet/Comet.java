@@ -15,7 +15,15 @@ public class Comet {
 
     private static Log log = Logs.get();
 
-    public static boolean replyByXHR(HttpServletResponse resp, String respTxt) {
+    private static long defaultSleepTime = 500;
+
+    public static void setSleepTime(long sleepTime) {
+        if (sleepTime > 0) {
+            defaultSleepTime = sleepTime;
+        }
+    }
+
+    public static boolean replyByXHR(HttpServletResponse resp, String respTxt, long sleepTime) {
         Writer wr = null;
         OutputStream out = null;
         try {
@@ -25,13 +33,17 @@ public class Comet {
             log.debugf("Comet-Send By XHR : [%s]", respTxt);
             wr.write(data);
             wr.flush();
-            Lang.quiteSleep(1 * 1000);
+            Lang.quiteSleep(1 * sleepTime);
         }
         catch (IOException e) {
             log.warn("Comet-Send Has Stoped");
             return false;
         }
         return true;
+    }
+
+    public static boolean replyByXHR(HttpServletResponse resp, String respTxt) {
+        return replyByXHR(resp, respTxt, defaultSleepTime);
     }
 
     public static boolean replyByES(HttpServletResponse resp, String respTxt) {
