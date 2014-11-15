@@ -30,7 +30,7 @@ public class Comet {
             out = resp.getOutputStream();
             wr = new OutputStreamWriter(out);
             String data = respTxt;
-            log.debugf("Comet-Send By XHR : [%s]", respTxt);
+            // log.debugf("Comet-Send By XHR : [%s]", respTxt);
             wr.write(data);
             wr.flush();
             Lang.quiteSleep(1 * sleepTime);
@@ -55,7 +55,7 @@ public class Comet {
             out = resp.getOutputStream();
             wr = new OutputStreamWriter(out);
             String data = "data:" + respTxt + "\n\n";
-            log.debugf("Comet-Send By EventSource : [%s]", respTxt);
+            // log.debugf("Comet-Send By EventSource : [%s]", respTxt);
             wr.write(data);
             wr.flush();
         }
