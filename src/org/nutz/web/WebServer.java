@@ -2,6 +2,8 @@ package org.nutz.web;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.InetSocketAddress;
+
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.nutz.http.Http;
@@ -37,7 +39,7 @@ public class WebServer {
         if (dc.getAppPort() <= 0) {
             dc.set(WebConfig.APP_PORT, "80");
         }
-        server = new Server(dc.getAppPort());
+        server = new Server(InetSocketAddress.createUnresolved("0.0.0.0", dc.getAppPort()));
         // 设置应用上下文
         String warUrlString = null;
         File root = Files.findFile(dc.getAppRoot());
@@ -58,7 +60,7 @@ public class WebServer {
         server.setHandler(wac);
     }
 
-    void run() {
+    public void run() {
         try {
             prepare();
 
