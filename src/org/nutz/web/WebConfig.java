@@ -1,5 +1,7 @@
 package org.nutz.web;
 
+import java.io.Reader;
+
 import org.nutz.ioc.impl.PropertiesProxy;
 import org.nutz.lang.Lang;
 import org.nutz.lang.Strings;
@@ -129,6 +131,11 @@ public class WebConfig extends PropertiesProxy {
     public WebConfig(String path) {
         super(path);
         // 预处理键 : 引入其他的配置文件
+        joinByKey(MACRO_INCLUDE);
+    }
+    
+    public WebConfig(Reader r) {
+        super(r);
         joinByKey(MACRO_INCLUDE);
     }
 
