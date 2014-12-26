@@ -2,17 +2,20 @@ package org.nutz.web;
 
 import java.io.File;
 import java.io.IOException;
+
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.nutz.http.Http;
 import org.nutz.http.Response;
 import org.nutz.lang.Files;
 import org.nutz.lang.Lang;
+import org.nutz.lang.Strings;
 import org.nutz.lang.socket.SocketAction;
 import org.nutz.lang.socket.SocketContext;
 import org.nutz.lang.socket.Sockets;
 import org.nutz.log.Log;
 import org.nutz.log.Logs;
+import org.nutz.mvc.Mvcs;
 
 /**
  * 这个类将调用 Jetty 的类启动一个 HTTP 服务，并提供关闭这个服务的 Socket 端口
@@ -29,6 +32,11 @@ public class WebServer {
 
     public WebServer(WebConfig config) {
         this.dc = config;
+        // 加载动态声明对象
+        String annPaths = dc.getAppAnnIocPaths();
+        if (!Strings.isBlank(annPaths)) {
+            Mvcs.ann_dynamic_path = annPaths;
+        }
         // 保存到静态变量中
         Webs.setProp(config);
     }
@@ -42,7 +50,8 @@ public class WebServer {
         String warUrlString = null;
         File root = Files.findFile(dc.getAppRoot());
         if (root == null || !root.exists()) {
-            log.warnf("root: %s not exist!", dc.getAppRoot() == null ? "[]" : dc.getAppRoot());
+            log.warnf("root: %s not exist!",
+                      dc.getAppRoot() == null ? "[]" : dc.getAppRoot());
             warUrlString = Lang.runRootPath();
         } else {
             warUrlString = root.toURI().toURL().toExternalForm();
@@ -79,19 +88,22 @@ public class WebServer {
             // 管理
             if (log.isInfoEnabled())
                 log.infof("Create admin port at %d", dc.getAdminPort());
-            Sockets.localListenOne(dc.getAdminPort(), "stop", new SocketAction() {
-                public void run(SocketContext context) {
-                    if (null != server)
-                        try {
-                            server.stop();
-                        }
-                        catch (Exception e4stop) {
-                            if (log.isErrorEnabled())
-                                log.error("Fail to stop!", e4stop);
-                        }
-                    Sockets.close();
-                }
-            });
+            Sockets.localListenOne(dc.getAdminPort(),
+                                   "stop",
+                                   new SocketAction() {
+                                       public void run(SocketContext context) {
+                                           if (null != server)
+                                               try {
+                                                   server.stop();
+                                               }
+                                               catch (Exception e4stop) {
+                                                   if (log.isErrorEnabled())
+                                                       log.error("Fail to stop!",
+                                                                 e4stop);
+                                               }
+                                           Sockets.close();
+                                       }
+                                   });
 
         }
         catch (Throwable e) {

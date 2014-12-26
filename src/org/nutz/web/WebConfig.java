@@ -82,6 +82,18 @@ public class WebConfig extends PropertiesProxy {
         return has(APP_DEFAULTS_DESCRIPTOR);
     }
 
+    public String getAppName() {
+        return get("app-name");
+    }
+
+    public String getAppExtrs() {
+        return get("app-extrs");
+    }
+
+    public String getAppAnnIocPaths() {
+        return get("app-ann-paths");
+    }
+
     // ================================================= 获取路径扫描器
     /**
      * 创建一个资源扫描器，它需要下列属性:
@@ -102,7 +114,8 @@ public class WebConfig extends PropertiesProxy {
         jrs.setRsHome(check("app-rs-home"));
         jrs.setSegCss(Segments.create(check("app-rs-css")));
         jrs.setSegJs(Segments.create(check("app-rs-script")));
-        jrs.setScanPaths(Strings.splitIgnoreBlank(check("app-rs-scan-path"), "\n"));
+        jrs.setScanPaths(Strings.splitIgnoreBlank(check("app-rs-scan-path"),
+                                                  "\n"));
         jrs.setForce("force".equalsIgnoreCase(get("app-rs-scan", "force")));
         return jrs;
     }
