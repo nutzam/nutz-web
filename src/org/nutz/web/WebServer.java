@@ -46,13 +46,14 @@ public class WebServer {
         if (dc.getAppPort() <= 0) {
             dc.set(WebConfig.APP_PORT, "80");
         }
-        server = new Server(InetSocketAddress.createUnresolved("0.0.0.0", dc.getAppPort()));
+        server = new Server(InetSocketAddress.createUnresolved("0.0.0.0",
+                                                               dc.getAppPort()));
         // 设置应用上下文
         String warUrlString = null;
-        File root = Files.findFile(dc.getAppRoot());
+        String rootPath = dc.getAppRoot();
+        File root = Files.findFile(rootPath);
         if (root == null || !root.exists()) {
-            log.warnf("root: %s not exist!",
-                      dc.getAppRoot() == null ? "[]" : dc.getAppRoot());
+            log.warnf("root: '%s' not exist!", dc.get(WebConfig.APP_ROOT));
             warUrlString = Lang.runRootPath();
         } else {
             warUrlString = root.toURI().toURL().toExternalForm();
