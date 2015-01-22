@@ -10,6 +10,8 @@ def main():
         return
     repo = str(sys.argv[1])
     tmp_dir = "/tmp/nutz-web-build"
+    if os.path.exists(tmp_dir) :
+        subprocess.call(["rm", "-fr", tmp_dir])
     os.mkdir(tmp_dir)
     os.chdir(tmp_dir)
     git_repo = None
@@ -30,28 +32,45 @@ def main():
             print "emtry dir", repo
             sys.exit(1)
             return
-    #先编译src里面的文件
-    cp = _cp()
-    src_dir = repo + "/src"
-    if os.path.exists(src_dir) :
-        os.mkdir("classes")
-        cmd = "javac -g -cp %s -s %s -d classes" % (cp, src_dir)
-        print "invoke javac:", cmd
-        subprocess.check_call(cmd)
-        subprocess.check_call("cp -fr classes/* " + os.environ.get("NUTZWEB_CLASSES") + "/")
-        subprocess.check_call(["rm", "-fr", "classes"])
-    else :
-        print "Warnning", "without src dir"
-        
+    
     #看看有无ROOT,rs,conf, 一一拷贝过去
+    os.chdir(repo)
     for nm in ["ROOT", "rs", "conf", "libs"] :
         p = repo + "/" + nm
         if not os.path.exists(p) :
             continue
-        subprocess.call("cp -fr %s/* %s/%s/" % (p, os.environ.get("NUTZWEB_HOME"), p))
+        cmd = "cp -fr %s/* %s/%s/" % (p, os.environ.get("NUTZWEB_HOME"), nm)
+        subprocess.call(["pwd"])
+        print cmd
+        shell(cmd)
+        
+    #编译src里面的文件
+    cp = _cp()
+    src_dir = repo + "/src"
+    if os.path.exists(src_dir) :
+        os.mkdir(tmp_dir + "/classes")
+        os.system("shopt -s globstar")
+        cmd = "javac -g -cp %s -d %s/classes -encoding utf8 src/**/*.java" % (cp, tmp_dir)
+        print "invoke javac:", cmd
+        with open("/tmp/javac.sh", "w") as f :
+            f.write("#!/bin/bash\n")
+            f.write("shopt -s globstar\n")
+            f.write(cmd)
+        shell("chmod 777 /tmp/javac.sh")
+        shell("bash /tmp/javac.sh")
+        shell("cp -fr %s/classes/* %s/" % (tmp_dir, os.environ.get("NUTZWEB_CLASSES")))
+        shell("cp -fr %s/* %s" % (src_dir, os.environ.get("NUTZWEB_CLASSES")))
+        shell("""find %s -name "*.java" -delete """ % (src_dir))
+        subprocess.check_call(["rm", "-fr", "classes"])
+    else :
+        print "Warnning", "without src dir"
+        
         
     os.chdir("/")
     subprocess.call(["rm", "-fr", tmp_dir])
+    
+def shell(cmd):
+    subprocess.check_call(cmd, shell=1)
         
 def _cp():
     cp = os.environ.get("NUTZWEB_CONF") + ":" + os.environ.get("NUTZWEB_CLASSES")
