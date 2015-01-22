@@ -15,8 +15,6 @@ ENV NUTZWEB_LOGS /var/log/nutz-web/
 ENV NUTZWEB_MAIN_CLASS org.nutz.web.WebLauncher
 ENV NUTZWEB_JAVA_OPTS "-Xmx1g"
 
-COPY nutz-web-run.py /nutz-web-run.py
-
 RUN chmod 777 /nutz-web-run.py && mkdir -p $NUTZWEB_HOME $NUTZWEB_LIBS $NUTZWEB_RS $NUTZWEB_ROOT/WEB-INF/ $NUTZWEB_CLASSES $NUTZWEB_CONF $NUTZWEB_ETC $NUTZWEB_DATA $NUTZWEB_PROJECT $NUTZWEB_LOGS
 
 RUN apt-get update 
@@ -39,6 +37,7 @@ ENV NUTZ_WEB_NAME helloworld
 
 
 # 定义入口
+COPY nutz-web-run.py /nutz-web-run.py
 CMD python /nutz-web-run.py >> $NUTZWEB_LOGS/main.log
 VOLUME ["/etc/nutz-web", "/var/lib/nutz-web", "/var/lib/nutz-web-project"]
 EXPOSE 8080
