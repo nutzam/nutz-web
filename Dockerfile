@@ -4,6 +4,7 @@ MAINTAINER wendal "wendal1985@gmail.com"
 
 ENV NUTZWEB_DO_BUILD "python /nutz-web-build.py "
 
+
 # 定义入口
 COPY nutz-web-run.py /nutz-web-run.py
 COPY nutz-web-build.py /nutz-web-build.py
