@@ -15,6 +15,8 @@ ENV NUTZWEB_LOGS /var/log/nutz-web/
 ENV NUTZWEB_MAIN_CLASS org.nutz.web.WebLauncher
 ENV NUTZWEB_JAVA_OPTS "-Xmx1g"
 
+RUN cp nutz-web-run.py / && chmod 777 /nutz-web-run.py
+
 RUN mkdir -p $NUTZWEB_HOME $NUTZWEB_LIBS $NUTZWEB_RS $NUTZWEB_ROOT/WEB-INF/ $NUTZWEB_CLASSES $NUTZWEB_CONF $NUTZWEB_ETC $NUTZWEB_DATA $NUTZWEB_PROJECT
 
 RUN apt-get update 
@@ -32,11 +34,10 @@ RUN cd $NUTZWEB_HOME && git clone --depth=1 https://github.com/nutzam/nutz-web.g
 	cd $NUTZWEB_HOME && rm -fr nutz-web
 	
 # 添加一个demo项目在里面
-ENV_NUTZ_WEB_NAME helloworld
+ENV NUTZ_WEB_NAME helloworld
 
 
 # 定义入口
-RUN cp nutz-web-run.py / && chmod 777 /nutz-web-run.py
 CMD ["python", "/nutz-web-run.py"]
 VOLUME ["/etc/nutz-web", "/var/lib/nutz-web", "/var/lib/nutz-web-project"]
 EXPOSE 8080
