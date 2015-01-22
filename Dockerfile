@@ -1,12 +1,25 @@
-FROM maven:3.2-jdk-8
+FROM maven:3.2-jdk-7
 
 MAINTAINER wendal "wendal1985@gmail.com"
 
-RUN apt-get update 
-RUN apt-get install -y --force-yes zip git wget curl
+ENV NUTZWEB_HOME /usr/share/nutz-web
+ENV NUTZWEB_LIBS $NUTZWEB_HOME/libs
+ENV NUTZWEB_RS $NUTZWEB_HOME/rs
+ENV NUTZWEB_ROOT $NUTZWEB_HOME/Root
+ENV NUTZWEB_CLASSES $NUTZWEB_HOME/classes
+ENV NUTZWEB_CONF $NUTZWEB_HOME/conf
+ENV NUTZWEB_ETC /etc/nutz-web
+ENV NUTZWEB_DATA /var/lib/nutz-web
+ENV NUTZWEB_PROJECT /var/lib/nutz-web-project
+ENV NUTZWEB_LOGS /var/log/nutz-web/
+ENV NUTZWEB_MAIN_CLASS org.nutz.web.WebLauncher
+ENV NUTZWEB_JAVA_OPTS "-Xmx1g"
 
-ENV NUTZWEB_HOME /usr/share/nutzweb
-RUN mkdir $NUTZWEB_HOME $NUTZWEB_HOME/bin $NUTZWEB_HOME/libs $NUTZWEB_HOME/rs $NUTZWEB_HOME/ROOT $NUTZWEB_HOME/conf $NUTZWEB_HOME/props
+RUN mkdir -p $NUTZWEB_HOME $NUTZWEB_LIBS $NUTZWEB_RS $NUTZWEB_ROOT/WEB-INF/ $NUTZWEB_CLASSES $NUTZWEB_CONF $NUTZWEB_ETC $NUTZWEB_DATA $NUTZWEB_PROJECT
+
+RUN apt-get update 
+RUN apt-get install -y --force-yes git
+
 WORKDIR $NUTZWEB_HOME
 
 RUN cd $NUTZWEB_HOME && git clone --depth=1 https://github.com/nutzam/nutz.git  && \
@@ -14,8 +27,16 @@ RUN cd $NUTZWEB_HOME && git clone --depth=1 https://github.com/nutzam/nutz.git  
 
 # 添加nutz-web的编译
 RUN cd $NUTZWEB_HOME && git clone --depth=1 https://github.com/nutzam/nutz-web.git && \
-	sed -i 's/1.b.51/1.b.52/g' nutz-web-master/pom.xml && \
+	sed -i 's/1.b.51/1.b.52/g' nutz-web/pom.xml && \
 	cd $NUTZWEB_HOME/nutz-web && mvn -Dmaven.test.skip=true clean package install dependency:copy-dependencies && \
 	cd $NUTZWEB_HOME && rm -fr nutz-web
+	
+# 添加一个demo项目在里面
+ENV_NUTZ_WEB_NAME helloworld
 
+
+# 定义入口
+RUN cp nutz-web-run.py / && chmod 777 /nutz-web-run.py
+CMD ["python", "/nutz-web-run.py"]
+VOLUME ["/etc/nutz-web", "/var/lib/nutz-web", "/var/lib/nutz-web-project"]
 EXPOSE 8080
