@@ -2,12 +2,11 @@ FROM nutzam/nutz-web:docker-base
 
 MAINTAINER wendal "wendal1985@gmail.com"
 
-ENV NUTZWEB_DO_BUILD "python /nutz-web-build.py "
-
+ENV ANT_VERSION 1.9.4
+RUN curl http://www.us.apache.org/dist/ant/binaries/apache-ant-$ANT_VERSION-bin.tar.gz | tar xzf - -C /usr/share \
+  && mv /usr/share/apache-ant-$ANT_VERSION /usr/share/ant \
+  && ln -s /usr/share/ant/bin/ant /usr/bin/ant
 
 # 定义入口
-COPY nutz-web-run.py /nutz-web-run.py
-COPY nutz-web-build.py /nutz-web-build.py
-CMD python /nutz-web-run.py 2>&1 | tee -a $NUTZWEB_LOGS/main.log
 VOLUME ["/etc/nutz-web", "/var/lib/nutz-web", "/var/lib/nutz-web-project", "/var/log/nutz-web"]
 EXPOSE 8080
