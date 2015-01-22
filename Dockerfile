@@ -31,13 +31,3 @@ RUN cd $NUTZWEB_HOME && git clone --depth=1 https://github.com/nutzam/nutz-web.g
 	cd $NUTZWEB_HOME/nutz-web && mvn -Dmaven.test.skip=true clean package install dependency:copy-dependencies && \
 	cp $NUTZWEB_HOME/nutz-web/target/dependency/*.jar $NUTZWEB_LIBS/
 	cd $NUTZWEB_HOME && rm -fr nutz-web
-	
-# 添加一个demo项目在里面
-ENV NUTZ_WEB_NAME helloworld
-
-
-# 定义入口
-COPY nutz-web-run.py /nutz-web-run.py
-CMD python /nutz-web-run.py >> $NUTZWEB_LOGS/main.log
-VOLUME ["/etc/nutz-web", "/var/lib/nutz-web", "/var/lib/nutz-web-project"]
-EXPOSE 8080
