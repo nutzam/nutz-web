@@ -30,5 +30,5 @@ RUN cd $NUTZWEB_HOME && git clone --depth=1 https://github.com/nutzam/nutz.git  
 	cd $NUTZWEB_HOME && git clone --depth=1 https://github.com/nutzam/nutz-web.git && \
 	sed -i 's/1.b.51/1.b.52/g' nutz-web/pom.xml && \
 	cd $NUTZWEB_HOME/nutz-web && mvn -Dmaven.test.skip=true -Dmaven.repo.local=/tmp/clean-repo clean package install dependency:copy-dependencies && \
-	cp $NUTZWEB_HOME/nutz-web/target/dependency/*.jar $NUTZWEB_LIBS/ && \
+	cp $NUTZWEB_HOME/nutz-web/target/dependency/*.jar $NUTZWEB_LIBS/ && cp $NUTZWEB_HOME/nutz-web/target/nutz-web*.jar $NUTZWEB_LIBS/ && \
 	cd $NUTZWEB_HOME && rm -fr nutz-web && rm -fr /tmp/clean-repo
