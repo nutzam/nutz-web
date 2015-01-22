@@ -17,7 +17,7 @@ ENV NUTZWEB_JAVA_OPTS "-Xmx1g"
 
 COPY nutz-web-run.py /nutz-web-run.py
 
-RUN chmod 777 /nutz-web-run.py && mkdir -p $NUTZWEB_HOME $NUTZWEB_LIBS $NUTZWEB_RS $NUTZWEB_ROOT/WEB-INF/ $NUTZWEB_CLASSES $NUTZWEB_CONF $NUTZWEB_ETC $NUTZWEB_DATA $NUTZWEB_PROJECT
+RUN chmod 777 /nutz-web-run.py && mkdir -p $NUTZWEB_HOME $NUTZWEB_LIBS $NUTZWEB_RS $NUTZWEB_ROOT/WEB-INF/ $NUTZWEB_CLASSES $NUTZWEB_CONF $NUTZWEB_ETC $NUTZWEB_DATA $NUTZWEB_PROJECT $NUTZWEB_LOGS
 
 RUN apt-get update 
 RUN apt-get install -y --force-yes git
@@ -31,6 +31,7 @@ RUN cd $NUTZWEB_HOME && git clone --depth=1 https://github.com/nutzam/nutz.git  
 RUN cd $NUTZWEB_HOME && git clone --depth=1 https://github.com/nutzam/nutz-web.git && \
 	sed -i 's/1.b.51/1.b.52/g' nutz-web/pom.xml && \
 	cd $NUTZWEB_HOME/nutz-web && mvn -Dmaven.test.skip=true clean package install dependency:copy-dependencies && \
+	cp $NUTZWEB_HOME/nutz-web/target/dependency/*.jar $NUTZWEB_LIBS/
 	cd $NUTZWEB_HOME && rm -fr nutz-web
 	
 # 添加一个demo项目在里面
@@ -38,6 +39,6 @@ ENV NUTZ_WEB_NAME helloworld
 
 
 # 定义入口
-CMD ["python", "/nutz-web-run.py"]
+CMD python /nutz-web-run.py >> $NUTZWEB_LOGS/main.log
 VOLUME ["/etc/nutz-web", "/var/lib/nutz-web", "/var/lib/nutz-web-project"]
 EXPOSE 8080
