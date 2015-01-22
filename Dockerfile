@@ -15,9 +15,9 @@ ENV NUTZWEB_LOGS /var/log/nutz-web/
 ENV NUTZWEB_MAIN_CLASS org.nutz.web.WebLauncher
 ENV NUTZWEB_JAVA_OPTS "-Xmx1g"
 
-RUN cp nutz-web-run.py / && chmod 777 /nutz-web-run.py
+COPY nutz-web-run.py /nutz-web-run.py
 
-RUN mkdir -p $NUTZWEB_HOME $NUTZWEB_LIBS $NUTZWEB_RS $NUTZWEB_ROOT/WEB-INF/ $NUTZWEB_CLASSES $NUTZWEB_CONF $NUTZWEB_ETC $NUTZWEB_DATA $NUTZWEB_PROJECT
+RUN chmod 777 /nutz-web-run.py && mkdir -p $NUTZWEB_HOME $NUTZWEB_LIBS $NUTZWEB_RS $NUTZWEB_ROOT/WEB-INF/ $NUTZWEB_CLASSES $NUTZWEB_CONF $NUTZWEB_ETC $NUTZWEB_DATA $NUTZWEB_PROJECT
 
 RUN apt-get update 
 RUN apt-get install -y --force-yes git
