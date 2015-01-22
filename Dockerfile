@@ -21,13 +21,15 @@ RUN apt-get update
 RUN apt-get install -y --force-yes git
 
 WORKDIR $NUTZWEB_HOME
+ENV MVN_ENV "-Dmaven.test.skip=true -Dmaven.repo.local=/tmp/clean-repo"
 
+
+# 添加nutz和nutz-web的编译
 RUN cd $NUTZWEB_HOME && git clone --depth=1 https://github.com/nutzam/nutz.git  && \
-	cd $NUTZWEB_HOME/nutz && mvn -Dmaven.test.skip=true clean package install && cd $NUTZWEB_HOME && rm -fr nutz
-
-# 添加nutz-web的编译
-RUN cd $NUTZWEB_HOME && git clone --depth=1 https://github.com/nutzam/nutz-web.git && \
+	cd $NUTZWEB_HOME/nutz && mvn $MVN_ENV clean package install && cd $NUTZWEB_HOME && rm -fr nutz && \
+	echo "---------------------------------------" && \
+	cd $NUTZWEB_HOME && git clone --depth=1 https://github.com/nutzam/nutz-web.git && \
 	sed -i 's/1.b.51/1.b.52/g' nutz-web/pom.xml && \
-	cd $NUTZWEB_HOME/nutz-web && mvn -Dmaven.test.skip=true clean package install dependency:copy-dependencies && \
-	cp $NUTZWEB_HOME/nutz-web/target/dependency/*.jar $NUTZWEB_LIBS/
+	cd $NUTZWEB_HOME/nutz-web && mvn $MVN_ENV clean package install dependency:copy-dependencies && \
+	cp $NUTZWEB_HOME/nutz-web/target/dependency/*.jar $NUTZWEB_LIBS/ && \
 	cd $NUTZWEB_HOME && rm -fr nutz-web
