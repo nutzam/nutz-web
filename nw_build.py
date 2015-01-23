@@ -18,7 +18,7 @@ def main():
     if repo.startswith("git@") or repo.startswith("https:") :
         git_repo = repo
         shell("git clone --depth=1 " + git_repo)
-        repo = tmp_dir + "/" + os.listdir(path)[0]
+        repo = tmp_dir + "/" + os.listdir(tmp_dir)[0]
     else :
         if not os.path.exists(repo) :
             print "not such dir", repo
