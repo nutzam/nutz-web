@@ -48,7 +48,7 @@ def main():
     cp = _cp()
     pom_path = repo + "/pom.xml"
     if os.path.exists(pom_path) :
-        os.chdir(path)
+        os.chdir(repo)
         shell("mvn -Dmaven.test.skip=true clean package install dependency:copy-dependencies ")
         shell("cp target/*.jar " + os.environ.get("NUTZWEB_LIBS"))
         shell("cp target/dependency/* " + os.environ.get("NUTZWEB_LIBS"))
