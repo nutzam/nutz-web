@@ -17,8 +17,7 @@ ENV NUTZWEB_JAVA_OPTS "-Xmx1g"
 
 RUN mkdir -p $NUTZWEB_HOME $NUTZWEB_LIBS $NUTZWEB_RS $NUTZWEB_ROOT/WEB-INF/ $NUTZWEB_CLASSES $NUTZWEB_CONF $NUTZWEB_ETC $NUTZWEB_DATA $NUTZWEB_PROJECT $NUTZWEB_LOGS
 
-RUN apt-get update 
-RUN apt-get install -y --force-yes git
+RUN apt-get update && apt-get install -y --force-yes git
 
 WORKDIR $NUTZWEB_HOME
 
