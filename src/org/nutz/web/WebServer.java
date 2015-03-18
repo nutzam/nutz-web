@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.nutz.http.Http;
 import org.nutz.http.Response;
@@ -17,6 +18,7 @@ import org.nutz.lang.socket.Sockets;
 import org.nutz.log.Log;
 import org.nutz.log.Logs;
 import org.nutz.mvc.Mvcs;
+import org.nutz.web.jsp.ComboResource;
 
 /**
  * 这个类将调用 Jetty 的类启动一个 HTTP 服务，并提供关闭这个服务的 Socket 端口
@@ -46,8 +48,7 @@ public class WebServer {
         if (dc.getAppPort() <= 0) {
             dc.set(WebConfig.APP_PORT, "80");
         }
-        server = new Server(InetSocketAddress.createUnresolved("0.0.0.0",
-                                                               dc.getAppPort()));
+        server = new Server(InetSocketAddress.createUnresolved("0.0.0.0", dc.getAppPort()));
         // 设置应用上下文
         String warUrlString = null;
         String rootPath = dc.getAppRoot();
@@ -71,11 +72,31 @@ public class WebServer {
 
     public void run() {
         try {
+            // 准备 ..
             prepare();
 
             // 启动
             server.start();
 
+            // 添加更多的 JSP 寻找路径
+            if (dc.has("app-jsp-extpath")) {
+                // 基础的 app-root 作为寻找列表的第一项
+                WebAppContext wac = (WebAppContext) server.getHandler();
+                ComboResource cr = new ComboResource(wac.getBaseResource());
+                String[] ss = Strings.splitIgnoreBlank(dc.trim("app-jsp-extpath"),
+                                                       "[,\n]");
+                for (String s : ss) {
+                    File d = Files.findFile(s);
+                    if (null != d) {
+                        Resource r = Resource.newResource(d.toURI());
+                        if (r.exists())
+                            cr.addResource(r);
+                    }
+                }
+                // 设置进上下文
+                wac.setBaseResource(cr);
+            }
+            
             // 自省一下,判断自己是否能否正常访问
             Response resp = Http.get("http://127.0.0.1:" + dc.getAppPort());
             if (resp == null || resp.getStatus() >= 500) {
@@ -90,22 +111,19 @@ public class WebServer {
             // 管理
             if (log.isInfoEnabled())
                 log.infof("Create admin port at %d", dc.getAdminPort());
-            Sockets.localListenOne(dc.getAdminPort(),
-                                   "stop",
-                                   new SocketAction() {
-                                       public void run(SocketContext context) {
-                                           if (null != server)
-                                               try {
-                                                   server.stop();
-                                               }
-                                               catch (Exception e4stop) {
-                                                   if (log.isErrorEnabled())
-                                                       log.error("Fail to stop!",
-                                                                 e4stop);
-                                               }
-                                           Sockets.close();
-                                       }
-                                   });
+            Sockets.localListenOne(dc.getAdminPort(), "stop", new SocketAction() {
+                public void run(SocketContext context) {
+                    if (null != server)
+                        try {
+                            server.stop();
+                        }
+                        catch (Exception e4stop) {
+                            if (log.isErrorEnabled())
+                                log.error("Fail to stop!", e4stop);
+                        }
+                    Sockets.close();
+                }
+            });
 
         }
         catch (Throwable e) {
