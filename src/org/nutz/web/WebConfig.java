@@ -92,8 +92,12 @@ public class WebConfig extends PropertiesProxy {
         return get("app-extrs");
     }
 
-    public String getAppAnnIocPaths() {
+    public String getAppAnnPaths() {
         return get("app-ann-paths");
+    }
+
+    public String getAppModules() {
+        return get("app-modules");
     }
 
     // ================================================= 获取路径扫描器
@@ -116,8 +120,7 @@ public class WebConfig extends PropertiesProxy {
         jrs.setRsHome(check("app-rs-home"));
         jrs.setSegCss(Segments.create(check("app-rs-css")));
         jrs.setSegJs(Segments.create(check("app-rs-script")));
-        jrs.setScanPaths(Strings.splitIgnoreBlank(check("app-rs-scan-path"),
-                                                  "\n"));
+        jrs.setScanPaths(Strings.splitIgnoreBlank(check("app-rs-scan-path"), "\n"));
         jrs.setForce("force".equalsIgnoreCase(get("app-rs-scan", "force")));
         return jrs;
     }
@@ -133,7 +136,7 @@ public class WebConfig extends PropertiesProxy {
         // 预处理键 : 引入其他的配置文件
         joinByKey(MACRO_INCLUDE);
     }
-    
+
     public WebConfig(Reader r) {
         super(r);
         joinByKey(MACRO_INCLUDE);

@@ -36,10 +36,17 @@ public class WebServer {
     public WebServer(WebConfig config) {
         this.dc = config;
         // 加载动态声明对象
-        String annPaths = dc.getAppAnnIocPaths();
+        String annPaths = dc.getAppAnnPaths();
         if (!Strings.isBlank(annPaths)) {
-            Mvcs.ann_dynamic_path = annPaths;
+            Mvcs.dynamic_ann_paths = annPaths;
         }
+
+        // 加载动态模块路径
+        String modules = dc.getAppModules();
+        if (!Strings.isBlank(modules)) {
+            Mvcs.dynamic_modules = modules;
+        }
+
         // 保存到静态变量中
         Webs.setProp(config);
     }
@@ -96,7 +103,7 @@ public class WebServer {
                 // 设置进上下文
                 wac.setBaseResource(cr);
             }
-            
+
             // 自省一下,判断自己是否能否正常访问
             Response resp = Http.get("http://127.0.0.1:" + dc.getAppPort());
             if (resp == null || resp.getStatus() >= 500) {
