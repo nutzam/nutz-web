@@ -3,9 +3,9 @@ package org.nutz.web.jsp;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.channels.ReadableByteChannel;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -51,10 +51,9 @@ public class ComboResource extends Resource {
         return false;
     }
 
-    @Override
-    public void release() {
+    public void close() {
         for (Resource res : list) {
-            res.release();
+            res.close();
         }
     }
 
@@ -107,11 +106,6 @@ public class ComboResource extends Resource {
     }
 
     @Override
-    public OutputStream getOutputStream() throws IOException, SecurityException {
-        throw Lang.noImplement();
-    }
-
-    @Override
     public boolean delete() throws SecurityException {
         throw Lang.noImplement();
     }
@@ -124,6 +118,12 @@ public class ComboResource extends Resource {
     @Override
     public String[] list() {
         throw Lang.noImplement();
+    }
+
+    @Override
+    public ReadableByteChannel getReadableByteChannel() throws IOException {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }
