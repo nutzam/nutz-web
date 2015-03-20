@@ -3,6 +3,7 @@ package org.nutz.web.jsp;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.channels.ReadableByteChannel;
@@ -11,6 +12,7 @@ import java.util.List;
 
 import org.eclipse.jetty.util.resource.Resource;
 import org.nutz.lang.Lang;
+import org.nutz.lang.Mirror;
 
 public class ComboResource extends Resource {
 
@@ -53,8 +55,21 @@ public class ComboResource extends Resource {
 
     public void close() {
         for (Resource res : list) {
-            res.close();
+            try {
+                Mirror.me(res).invoke(res, "close");
+            }
+            catch (Exception e) {}
         }
+    }
+
+    public void release() {
+        for (Resource res : list) {
+            try {
+                Mirror.me(res).invoke(res, "release");
+            }
+            catch (Exception e) {}
+        }
+
     }
 
     @Override
@@ -120,10 +135,13 @@ public class ComboResource extends Resource {
         throw Lang.noImplement();
     }
 
-    @Override
     public ReadableByteChannel getReadableByteChannel() throws IOException {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    public OutputStream getOutputStream() throws IOException, SecurityException {
+        throw Lang.noImplement();
     }
 
 }
