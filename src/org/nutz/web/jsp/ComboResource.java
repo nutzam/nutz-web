@@ -32,7 +32,6 @@ public class ComboResource extends Resource {
         return this;
     }
 
-    @Override
     public Resource addPath(String path) throws IOException, MalformedURLException {
         for (Resource res : list) {
             Resource r = res.addPath(path);
@@ -42,7 +41,6 @@ public class ComboResource extends Resource {
         throw Lang.makeThrow("Resource noexists : '%s'", path);
     }
 
-    @Override
     public boolean isContainedIn(Resource r) throws MalformedURLException {
         for (Resource res : list) {
             if (res.isContainedIn(r))
@@ -57,7 +55,6 @@ public class ComboResource extends Resource {
         }
     }
 
-    @Override
     public boolean exists() {
         for (Resource res : list) {
             if (res.exists())
@@ -66,7 +63,6 @@ public class ComboResource extends Resource {
         return false;
     }
 
-    @Override
     public boolean isDirectory() {
         for (Resource res : list) {
             if (!res.isDirectory())
@@ -75,52 +71,42 @@ public class ComboResource extends Resource {
         return true;
     }
 
-    @Override
     public long lastModified() {
         throw Lang.noImplement();
     }
 
-    @Override
     public long length() {
         throw Lang.noImplement();
     }
 
-    @Override
     public URL getURL() {
         throw Lang.noImplement();
     }
 
-    @Override
     public File getFile() throws IOException {
         throw Lang.noImplement();
     }
 
-    @Override
     public String getName() {
         throw Lang.noImplement();
     }
 
-    @Override
     public InputStream getInputStream() throws IOException {
         throw Lang.noImplement();
     }
 
-    @Override
     public boolean delete() throws SecurityException {
         throw Lang.noImplement();
     }
 
-    @Override
     public boolean renameTo(Resource dest) throws SecurityException {
         throw Lang.noImplement();
     }
 
-    @Override
     public String[] list() {
         throw Lang.noImplement();
     }
 
-    @Override
     public ReadableByteChannel getReadableByteChannel() throws IOException {
         // TODO Auto-generated method stub
         return null;
