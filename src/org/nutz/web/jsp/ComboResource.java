@@ -12,7 +12,6 @@ import java.util.List;
 
 import org.eclipse.jetty.util.resource.Resource;
 import org.nutz.lang.Lang;
-import org.nutz.lang.Mirror;
 
 public class ComboResource extends Resource {
 
@@ -53,21 +52,8 @@ public class ComboResource extends Resource {
 
     public void close() {
         for (Resource res : list) {
-            try {
-                Mirror.me(res).invoke(res, "close");
-            }
-            catch (Exception e) {}
+            res.close();
         }
-    }
-
-    public void release() {
-        for (Resource res : list) {
-            try {
-                Mirror.me(res).invoke(res, "release");
-            }
-            catch (Exception e) {}
-        }
-
     }
 
     public boolean exists() {
@@ -123,7 +109,6 @@ public class ComboResource extends Resource {
     }
 
     public ReadableByteChannel getReadableByteChannel() throws IOException {
-        // TODO Auto-generated method stub
         return null;
     }
 
