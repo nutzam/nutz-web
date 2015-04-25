@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.nutz</groupId>
 	<artifactId>nutz-web</artifactId>
-	<packaging>jar</packaging>
+	<packaging>pom</packaging>
 	<name>Nutz-Web</name>
 	<version>1.b.52</version>
 	<properties>
@@ -117,6 +117,16 @@
 					<argLine>-Dfile.encoding=UTF-8</argLine>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<configuration>
+					<additionalparam>-Xdoclint:none</additionalparam>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
+	<modules>
+		<module>nutz-plugins-daocache</module>
+	</modules>
 </project>
