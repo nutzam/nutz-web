@@ -3,6 +3,7 @@ package org.nutz.plugins.cache.dao;
 import java.sql.Connection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.nutz.dao.DB;
 import org.nutz.dao.DaoException;
@@ -14,6 +15,7 @@ import org.nutz.lang.Lang;
 import org.nutz.log.Log;
 import org.nutz.log.Logs;
 import org.nutz.plugins.cache.dao.impl.NopDaoCacheProvider;
+import org.nutz.trans.Trans;
 
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
@@ -24,10 +26,14 @@ import com.alibaba.druid.sql.parser.SQLStatementParser;
 
 public class CachedNutDaoExecutor extends NutDaoExecutor {
 
-	protected HashSet<Class<?>> cachedClasses = new HashSet<Class<?>>();
-
 	protected DaoCacheProvider cacheProvider;
 
+	protected boolean enableWhenTrans;
+	
+	protected String cacheClearMark = "dao-cache-clear";
+	
+	protected Set<String> cachedTableNames = new HashSet<String>();
+	
 	public CachedNutDaoExecutor() {
 		cacheProvider = new NopDaoCacheProvider();
 	}
@@ -59,21 +65,27 @@ public class CachedNutDaoExecutor extends NutDaoExecutor {
 		if (sqlStatement instanceof SQLSelectStatement) {
 			// 如果是select且不是batch(参数表只有一行,那么可能是缓存哦)
 			Object[][] params = st.getParamMatrix();
-			if (adapter.tableNames.size() == 1 && params.length <= 1) {
-				String tableName = tableNames.get(0);
-				String key = genKey(prepSql, params);
-				Object cachedValue = cacheProvider.get(tableName, key);
-				if (cachedValue != null) {
-					log.debug("cache found key=" + key);
-					st.getContext().setResult(cachedValue);
-				} else {
-					super.exec(conn, st);
-					cachedValue = st.getContext().getResult();
-					cacheProvider.put(tableName, key, cachedValue);
-				}
-				return;
+			if (Trans.isTransactionNone() || enableWhenTrans) {
+			    if (tableNames.size() == 1 && cachedTableNames.contains(tableNames.get(0)) && params.length <= 1) {
+			        String tableName = tableNames.get(0);
+			        String key = genKey(prepSql, params);
+			        Object cachedValue = cacheProvider.get(tableName, key);
+			        if (cachedValue != null) {
+			            log.debug("cache found key=" + key);
+			            st.getContext().setResult(cachedValue);
+			        } else {
+			            super.exec(conn, st);
+			            cachedValue = st.getContext().getResult();
+			            cacheProvider.put(tableName, key, cachedValue);
+			        }
+			        return;
+			    }
 			}
 			tableNames.clear(); // Select的表可别清除了
+		} else {
+		    Object mark = st.getContext().attr(cacheClearMark);
+		    if (mark == null || (Boolean)mark)
+		        tableNames.clear();
 		}
 		try {
 			super.exec(conn, st);
@@ -114,12 +126,20 @@ public class CachedNutDaoExecutor extends NutDaoExecutor {
 			throw new DaoException("daocache not support at this database");
 		}
 	}
-
-	public void addClass(Class<?> klass) {
-		this.cachedClasses.add(klass);
-	}
 	
 	public void setCacheProvider(DaoCacheProvider cacheProvider) {
 		this.cacheProvider = cacheProvider;
+	}
+	
+	public void setEnableWhenTrans(boolean enableWhenTrans) {
+        this.enableWhenTrans = enableWhenTrans;
+    }
+	
+	public void setCachedTableNames(Set<String> cachedTableNames) {
+		this.cachedTableNames = cachedTableNames;
+	}
+	
+	public void addCachedTableName(String name) {
+		this.cachedTableNames.add(name);
 	}
 }
