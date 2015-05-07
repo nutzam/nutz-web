@@ -70,7 +70,9 @@ public class WebMaker {
 
         mkFile(root, "ROOT/WEB-INF/web", "xml", _webXML(pc));
         mkFile(root, "ROOT/index", "html", _pageIndex());
-        mkFile(root, "run", "sh", _runSH(pc));
+        mkFile(root, "run", "sh", _runSH("run", pc));
+        mkFile(root, "stop", "sh", _runSH("stop", pc));
+        mkFile(root, "kill", "sh", _runSH("kill", pc));
 
         mkFile(root, "ROOT/404", "html", _page404());
         // 结束
@@ -185,11 +187,12 @@ public class WebMaker {
         return _readTmpl("404.html.tmpl").render().toString();
     }
 
-    private static String _runSH(ProjectConf pc) {
-        Segment cs = _readTmpl("run.sh");
+    private static String _runSH(String shNm, ProjectConf pc) {
+        Segment cs = _readTmpl(shNm + ".sh");
         cs.add("pkg", pc.pkg);
         cs.add("pnm", pc.pnm);
         cs.add("phome", pc.path);
+        cs.add("app-admin-port", pc.app_admin_port);
         return cs.render().toString();
     }
 
