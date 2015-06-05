@@ -11,14 +11,12 @@ import org.nutz.http.Http;
 import org.nutz.http.Response;
 import org.nutz.lang.Files;
 import org.nutz.lang.Lang;
-import org.nutz.lang.Mirror;
 import org.nutz.lang.Strings;
 import org.nutz.lang.socket.SocketAction;
 import org.nutz.lang.socket.SocketContext;
 import org.nutz.lang.socket.Sockets;
 import org.nutz.log.Log;
 import org.nutz.log.Logs;
-import org.nutz.mvc.Mvcs;
 import org.nutz.web.jsp.ComboResource;
 
 /**
@@ -36,27 +34,27 @@ public class WebServer {
 
     public WebServer(WebConfig config) {
         this.dc = config;
-        // 加载动态声明对象
-        String annPaths = dc.getAppAnnPaths();
-        if (!Strings.isBlank(annPaths)) {
-            // Mvcs.dynamic_ann_paths = annPaths;
-            // 改成兼容 Nutz 1.b.52 的写法
-            try {
-                Mirror.me(Mvcs.class).setValue(null, "dynamic_ann_paths", annPaths);
-            }
-            catch (Exception e) {}
-        }
-
-        // 加载动态模块路径
-        String modules = dc.getAppModules();
-        if (!Strings.isBlank(modules)) {
-            // Mvcs.dynamic_modules = modules;
-            // 改成兼容 Nutz 1.b.52 的写法
-            try {
-                Mirror.me(Mvcs.class).setValue(null, "dynamic_modules", modules);
-            }
-            catch (Exception e) {}
-        }
+        // // 加载动态声明对象
+        // String annPaths = dc.getAppAnnPaths();
+        // if (!Strings.isBlank(annPaths)) {
+        // // Mvcs.dynamic_ann_paths = annPaths;
+        // // 改成兼容 Nutz 1.b.52 的写法
+        // try {
+        // Mirror.me(Mvcs.class).setValue(null, "dynamic_ann_paths", annPaths);
+        // }
+        // catch (Exception e) {}
+        // }
+        //
+        // // 加载动态模块路径
+        // String modules = dc.getAppModules();
+        // if (!Strings.isBlank(modules)) {
+        // // Mvcs.dynamic_modules = modules;
+        // // 改成兼容 Nutz 1.b.52 的写法
+        // try {
+        // Mirror.me(Mvcs.class).setValue(null, "dynamic_modules", modules);
+        // }
+        // catch (Exception e) {}
+        // }
 
         // 保存到静态变量中
         Webs.setProp(config);
@@ -78,7 +76,7 @@ public class WebServer {
             warUrlString = root.toURI().toURL().toExternalForm();
         }
         log.debugf("war path : %s", warUrlString);
-        WebAppContext wac = new WebAppContext(warUrlString, "/");
+        WebAppContext wac = new WebAppContext(warUrlString, dc.getAppContextPath());
         if (dc.hasAppDefaultsDescriptor()) {
             wac.setDefaultsDescriptor(dc.getAppDefaultsDescriptor());
         }
@@ -101,8 +99,7 @@ public class WebServer {
                 // 基础的 app-root 作为寻找列表的第一项
                 WebAppContext wac = (WebAppContext) server.getHandler();
                 ComboResource cr = new ComboResource(wac.getBaseResource());
-                String[] ss = Strings.splitIgnoreBlank(dc.trim("app-jsp-extpath"),
-                                                       "[,\n]");
+                String[] ss = Strings.splitIgnoreBlank(dc.trim("app-jsp-extpath"), "[,\n]");
                 for (String s : ss) {
                     File d = Files.findFile(s);
                     if (null != d) {

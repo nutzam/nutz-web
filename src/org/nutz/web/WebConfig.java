@@ -27,6 +27,11 @@ public class WebConfig extends PropertiesProxy {
     public static final String APP_ROOT = "app-root";
 
     /**
+     * 配置WEB应用的上下文路径，默认是 "/"
+     */
+    public static final String APP_CONTEXT_PATH = "app-context-path";
+
+    /**
      * 配置文件的键名: 应用监听的端口，比如 8080
      */
     public static final String APP_PORT = "app-port";
@@ -58,6 +63,10 @@ public class WebConfig extends PropertiesProxy {
 
     public String getAppRoot() {
         return Disks.absolute(get(APP_ROOT));
+    }
+
+    public String getAppContextPath() {
+        return this.get(APP_CONTEXT_PATH, "/");
     }
 
     public int getAppPort() {

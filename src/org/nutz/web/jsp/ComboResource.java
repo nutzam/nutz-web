@@ -60,16 +60,6 @@ public class ComboResource extends Resource {
         }
     }
 
-    public void release() {
-        for (Resource res : list) {
-            try {
-                Mirror.me(res).invoke(res, "release");
-            }
-            catch (Exception e) {}
-        }
-
-    }
-
     public boolean exists() {
         for (Resource res : list) {
             if (res.exists())
