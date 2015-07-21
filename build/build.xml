@@ -14,14 +14,14 @@
 	<property name="SRC" location="${PROJECT_HOME}/src" />
 	<property name="TMP" value="${PROJECT_HOME}/build/temp" />
 
-	<property name="JDK_VERSION" value="1.6" />
+	<property name="JDK_VERSION" value="1.7" />
 
 
-	<property name="v" value="1.3" />
+	<property name="v" value="1.4" />
 
 	<path id="CLASSPATH">
 		<fileset dir="${DEPS}" casesensitive="no">
-			<include name="*.jar" />
+			<include name="**/*.jar" />
 		</fileset>
 		<pathelement location="${JAVA_HOME}/lib/rt.jar" />
 	</path>
