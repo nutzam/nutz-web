@@ -28,6 +28,10 @@ public class AjaxView implements View {
         uc = false;
     }
 
+    public AjaxView(boolean uc) {
+        this.uc = uc;
+    }
+
     public AjaxView(String useCompact) {
         uc = Strings.isBlank(useCompact) ? false : Boolean.parseBoolean(useCompact);
     }
