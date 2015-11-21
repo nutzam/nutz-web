@@ -8,7 +8,7 @@ import javax.servlet.jsp.tagext.TagSupport;
 
 import org.nutz.lang.Lang;
 import org.nutz.lang.Strings;
-import org.nutz.lang.util.Context;
+import org.nutz.lang.util.NutMap;
 import org.nutz.mvc.Mvcs;
 import org.nutz.mvc.impl.NutMessageMap;
 
@@ -30,13 +30,15 @@ public class MsgTag extends BodyTagSupport {
         NutMessageMap nmm = Mvcs.getMessageMap(pageContext.getRequest());
 
         // 准备上下文
-        Context ctx = Lang.context();
         String body = this.getBodyContent().getString();
+        NutMap map;
         if (!Strings.isBlank(body))
-            ctx.putAll(Lang.map(body));
+            map = Lang.map(body);
+        else
+            map = null;
 
         // 得到字符串
-        String str = nmm.get(key, ctx);
+        String str = nmm.get(key, map);
 
         // 输出
         try {
