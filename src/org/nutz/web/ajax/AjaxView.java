@@ -53,7 +53,11 @@ public class AjaxView implements View {
         // 异常
         else if (obj instanceof Throwable) {
             WebException err = Webs.Err.wrap((Throwable) obj);
-            String msg = Mvcs.getMessage(req, err.getKey());
+            String msg = err.getKey();
+            try {
+                msg = Mvcs.getMessage(req, err.getKey());
+            }
+            catch (Exception e) {}
             re = Ajax.fail().setErrCode(err.getKey()).setMsg(msg).setData(err.getReason());
         }
         // AjaxReturn
