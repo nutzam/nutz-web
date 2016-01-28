@@ -121,4 +121,6 @@ public class ComboResource extends Resource {
         throw Lang.noImplement();
     }
 
+    public void release() {}
+
 }

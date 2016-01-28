@@ -34,27 +34,6 @@ public class WebServer {
 
     public WebServer(WebConfig config) {
         this.dc = config;
-        // // 加载动态声明对象
-        // String annPaths = dc.getAppAnnPaths();
-        // if (!Strings.isBlank(annPaths)) {
-        // // Mvcs.dynamic_ann_paths = annPaths;
-        // // 改成兼容 Nutz 1.b.52 的写法
-        // try {
-        // Mirror.me(Mvcs.class).setValue(null, "dynamic_ann_paths", annPaths);
-        // }
-        // catch (Exception e) {}
-        // }
-        //
-        // // 加载动态模块路径
-        // String modules = dc.getAppModules();
-        // if (!Strings.isBlank(modules)) {
-        // // Mvcs.dynamic_modules = modules;
-        // // 改成兼容 Nutz 1.b.52 的写法
-        // try {
-        // Mirror.me(Mvcs.class).setValue(null, "dynamic_modules", modules);
-        // }
-        // catch (Exception e) {}
-        // }
 
         // 保存到静态变量中
         Webs.setProp(config);
@@ -81,6 +60,7 @@ public class WebServer {
             wac.setDefaultsDescriptor(dc.getAppDefaultsDescriptor());
         }
         wac.setExtraClasspath(dc.getAppClasspath());
+        wac.setClassLoader(getClass().getClassLoader());
         // wac.setResourceBase(warUrlString);
         // wac.addServlet(DefaultServlet.class, "/rs/*");
         server.setHandler(wac);

@@ -1,6 +1,7 @@
 package org.nutz.web;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.Reader;
 
 import org.nutz.lang.Files;
@@ -44,7 +45,8 @@ public class WebLauncher {
     public static void start(String... args) {
         String path = Strings.sBlank(Lang.first(args), Webs.CONF_PATH);
         File f = Files.findFile(path);
-
+        if (f == null)
+        	throw new RuntimeException(new FileNotFoundException(path));
         log.infof("launch by '%s'", f);
 
         Reader r = Streams.fileInr(f);
