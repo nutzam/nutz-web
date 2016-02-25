@@ -1,5 +1,6 @@
 package org.nutz.web;
 
+import org.nutz.json.Json;
 import org.nutz.lang.Strings;
 
 public class WebException extends RuntimeException {
@@ -52,6 +53,9 @@ public class WebException extends RuntimeException {
     public String toString() {
         if (null == reason) {
             return key;
+        }
+        if (reason instanceof String[]) {
+        	return key + ":" + Json.toJson(reason);
         }
         return key + " : " + reason;
     }
