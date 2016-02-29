@@ -83,10 +83,14 @@ public class WebServer {
                 for (String s : ss) {
                     File d = Files.findFile(s);
                     if (null != d) {
-                        Resource r = Resource.newResource(d.toURI());
-                        if (r.exists())
+                        Resource r = Resource.newResource(d.getCanonicalFile().toURI());
+                        if (r.exists()) {
+                        	log.debug("app-jsp-extpath OK >> " + s);
                             cr.addResource(r);
+                            continue;
+                        }
                     }
+                    log.debug("app-jsp-extpath FAIL >> " + s);
                 }
                 // 设置进上下文
                 wac.setBaseResource(cr);
