@@ -3,9 +3,12 @@ package org.nutz.web;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.resource.Resource;
+import org.eclipse.jetty.util.resource.ResourceCollection;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.nutz.http.Http;
 import org.nutz.http.Response;
@@ -17,7 +20,6 @@ import org.nutz.lang.socket.SocketContext;
 import org.nutz.lang.socket.Sockets;
 import org.nutz.log.Log;
 import org.nutz.log.Logs;
-import org.nutz.web.jsp.ComboResource;
 
 /**
  * 这个类将调用 Jetty 的类启动一个 HTTP 服务，并提供关闭这个服务的 Socket 端口
@@ -78,7 +80,8 @@ public class WebServer {
             if (dc.has("app-jsp-extpath")) {
                 // 基础的 app-root 作为寻找列表的第一项
                 WebAppContext wac = (WebAppContext) server.getHandler();
-                ComboResource cr = new ComboResource(wac.getBaseResource());
+                List<Resource> rs = new ArrayList<Resource>();
+                rs.add(wac.getBaseResource());
                 String[] ss = Strings.splitIgnoreBlank(dc.trim("app-jsp-extpath"), "[,\n]");
                 for (String s : ss) {
                     File d = Files.findFile(s);
@@ -86,14 +89,14 @@ public class WebServer {
                         Resource r = Resource.newResource(d.getCanonicalFile().toURI());
                         if (r.exists()) {
                         	log.debug("app-jsp-extpath OK >> " + s);
-                            cr.addResource(r);
+                            rs.add(r);
                             continue;
                         }
                     }
                     log.debug("app-jsp-extpath FAIL >> " + s);
                 }
                 // 设置进上下文
-                wac.setBaseResource(cr);
+                wac.setBaseResource(new ResourceCollection(rs.toArray(new Resource[rs.size()])));
             }
 
             // 自省一下,判断自己是否能否正常访问
