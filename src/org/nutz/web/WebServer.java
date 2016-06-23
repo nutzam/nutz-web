@@ -2,11 +2,13 @@ package org.nutz.web;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.util.resource.ResourceCollection;
 import org.eclipse.jetty.webapp.WebAppContext;
@@ -63,9 +65,25 @@ public class WebServer {
         }
         wac.setExtraClasspath(dc.getAppClasspath());
         wac.setClassLoader(getClass().getClassLoader());
+        
         // wac.setResourceBase(warUrlString);
         // wac.addServlet(DefaultServlet.class, "/rs/*");
         server.setHandler(wac);
+        List<String> websockets = dc.getList("websockets");
+        if (websockets != null && websockets.size() > 0) {
+            try {
+                Class<?> klass = Class.forName("org.eclipse.jetty.websocket.jsr356.server.deploy.WebSocketServerContainerInitializer");
+                Object tmp = klass.getMethod("configureContext", ServletContextHandler.class).invoke(null, wac);
+                Method method = tmp.getClass().getMethod("addEndpoint", Class.class);
+                for (String name : websockets) {
+                    method.invoke(tmp, Class.forName(name));
+                }
+            }
+            catch (Exception e) {
+                log.warn("enable websocket fail");
+            }
+        }
+        
     }
 
     public void run() {
