@@ -10,11 +10,19 @@ A Jetty launcher + Nutz.Mvc Ajax View
 ## 添加依赖(maven)
 
 ```xml
+		<dependency>
+			<groupId>org.nutz</groupId>
+			<artifactId>nutz-web</artifactId>
+			<version>1.r.57</version>
+		</dependency>
+```
+
+```xml
 
 		<dependency>
 			<groupId>org.nutz</groupId>
 			<artifactId>nutz-web</artifactId>
-			<version>1.r.57-SNAPSHOT</version>
+			<version>1.r.58-SNAPSHOT</version>
 			<exclusions> <!-- nutz-web为了兼容Android所以默认使用jetty 7.x, 这里我们换成最新的jetty9 -->
 				<exclusion>
 					<groupId>org.eclipse.jetty.aggregate</groupId>
@@ -59,4 +67,23 @@ A Jetty launcher + Nutz.Mvc Ajax View
 ```ini
 app-root=src/main/webapp
 app-port=8080
+```
+
+## 启动
+
+方式一, 直接使用org.nutz.web.WebLauncher,该类自带main方法
+
+方式二,新建一个类,调用org.nutz.web.WebLauncher
+
+```java
+package net.wendal.nutzbook;
+
+import org.nutz.web.WebLauncher;
+
+public class MainLauncher extends WebLauncher {
+
+    public static void main(String[] args) {
+        WebLauncher.main(args);
+    }
+}
 ```
