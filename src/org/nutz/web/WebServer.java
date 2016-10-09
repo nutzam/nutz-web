@@ -70,18 +70,18 @@ public class WebServer {
         // wac.addServlet(DefaultServlet.class, "/rs/*");
         server.setHandler(wac);
         List<String> websockets = dc.getList("websockets");
-        if (websockets != null && websockets.size() > 0) {
-            try {
-                Class<?> klass = Class.forName("org.eclipse.jetty.websocket.jsr356.server.deploy.WebSocketServerContainerInitializer");
-                Object tmp = klass.getMethod("configureContext", ServletContextHandler.class).invoke(null, wac);
-                Method method = tmp.getClass().getMethod("addEndpoint", Class.class);
+        try {
+            Class<?> klass = Class.forName("org.eclipse.jetty.websocket.jsr356.server.deploy.WebSocketServerContainerInitializer");
+            Object tmp = klass.getMethod("configureContext", ServletContextHandler.class).invoke(null, wac);
+            Method method = tmp.getClass().getMethod("addEndpoint", Class.class);
+            if (websockets != null) {
                 for (String name : websockets) {
                     method.invoke(tmp, Class.forName(name));
                 }
             }
-            catch (Exception e) {
-                log.warn("enable websocket fail");
-            }
+        }
+        catch (Exception e) {
+            log.warn("enable websocket fail");
         }
         
     }
