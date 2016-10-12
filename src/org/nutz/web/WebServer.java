@@ -66,7 +66,6 @@ public class WebServer {
         wac.setExtraClasspath(dc.getAppClasspath());
         wac.setClassLoader(getClass().getClassLoader());
         wac.setConfigurationDiscovered(true);
-        wac.setCopyWebInf(true);
         
         // wac.setResourceBase(warUrlString);
         // wac.addServlet(DefaultServlet.class, "/rs/*");
