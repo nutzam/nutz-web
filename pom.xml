@@ -47,8 +47,6 @@
 		<url>git://github.com/nutzam/nutz-web.git</url>
 	</scm>
 
-	<repositories>
-	</repositories>
 	<dependencies>
 		<dependency>
 			<groupId>org.eclipse.jetty.aggregate</groupId>
