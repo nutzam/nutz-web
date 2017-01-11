@@ -2,7 +2,6 @@ package org.nutz.web;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
@@ -66,15 +65,17 @@ public class WebServer {
         wac.setExtraClasspath(dc.getAppClasspath());
         wac.setClassLoader(getClass().getClassLoader());
         wac.setConfigurationDiscovered(true);
+        if (System.getProperty("os.name").toLowerCase().contains("windows")) {
+            wac.setInitParameter("org.eclipse.jetty.servlet.Default.useFileMappedBuffer", "false");
+        }
         
-        // wac.setResourceBase(warUrlString);
-        // wac.addServlet(DefaultServlet.class, "/rs/*");
+        
         server.setHandler(wac);
         List<String> websockets = dc.getList("websockets");
         try {
             Class<?> klass = Class.forName("org.eclipse.jetty.websocket.jsr356.server.deploy.WebSocketServerContainerInitializer");
             Object tmp = klass.getMethod("configureContext", ServletContextHandler.class).invoke(null, wac);
-            Method method = tmp.getClass().getMethod("addEndpoint", Class.class);
+            java.lang.reflect.Method method = tmp.getClass().getMethod("addEndpoint", Class.class);
             if (websockets != null) {
                 for (String name : websockets) {
                     method.invoke(tmp, Class.forName(name));
@@ -82,7 +83,7 @@ public class WebServer {
             }
         }
         catch (Exception e) {
-            log.warn("enable websocket fail");
+            log.warn("enable websocket fail", e);
         }
         
     }
