@@ -1,13 +1,25 @@
 package org.nutz.web;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.Reader;
+import java.io.StringReader;
+import java.net.URL;
+import java.security.ProtectionDomain;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
+import org.nutz.json.Json;
+import org.nutz.lang.Encoding;
 import org.nutz.lang.Files;
 import org.nutz.lang.Lang;
 import org.nutz.lang.Streams;
 import org.nutz.lang.Strings;
+import org.nutz.lang.util.CmdParams;
 import org.nutz.log.Log;
 import org.nutz.log.Logs;
 
@@ -22,7 +34,11 @@ public class WebLauncher {
     private static final Log log = Logs.get();
 
     public static void main(String[] args) {
-        start(args);
+        if (!selfPath().endsWith(".war") && args != null && args.length > 0 && args[0].startsWith("-")) {
+            exec(args);
+        } else {
+            start(args);
+        }
     }
 
     /**
@@ -43,20 +59,31 @@ public class WebLauncher {
      *            接受一个参数作为 web 服务器的配置文件路径
      */
     public static void start(String... args) {
-        String path = Strings.sBlank(Lang.first(args), Webs.CONF_PATH);
-        File f = Files.findFile(path);
-        if (f == null)
-        	throw new RuntimeException(new FileNotFoundException(path));
-        log.infof("launch by '%s'", f);
-
-        Reader r = Streams.fileInr(f);
-        try {
-            final WebServer server = new WebServer(new WebConfig(r));
-            server.run();
+        WebConfig conf = null;
+        String self = selfPath();
+        if (args == null || args.length == 0 || self.endsWith(".war")) {
+            conf = new WebConfig(new StringReader(""));
+            conf.put("war", self);
+            conf.put("web-xml", self + "/WEB-INF/web.xml");
+            CmdParams params = CmdParams.parse(args, null);
+            conf.put(WebConfig.APP_PORT, params.get("port", "8080"));
+            conf.put(WebConfig.BIND_ADDRESS, params.get("bind", "0.0.0.0"));
+            conf.put(WebConfig.APP_CLASSPATH, params.get("cp", "./conf/"));
         }
-        finally {
-            Streams.safeClose(r);
+        if (conf == null) {
+            String path = Strings.sBlank(Lang.first(args), Webs.CONF_PATH);
+            File f = Files.findFile(path);
+            if (f == null) {
+                throw new RuntimeException(new FileNotFoundException(path));
+            } else {
+                log.infof("launch by '%s'", f);
+                Reader r = Streams.fileInr(f);
+                conf = new WebConfig(r);
+            }
         }
+        
+        final WebServer server = new WebServer(conf);
+        server.run();
 
         log.info("Server is down!");
     }
@@ -71,5 +98,81 @@ public class WebLauncher {
         server.run();
 
         log.info("Server is down!");
+    }
+    
+    public static void printHelp() {
+        log.warn("web.properties not found");
+    }
+    
+    public static void exec(String...args) {
+        log.debug(Json.toJson(args));
+        CmdParams params = CmdParams.parse(args, "debug");
+        if (params.has("inject")) {
+            String src = params.get("inject");
+            String self = null;
+            if (params.has("self"))
+                self = params.get("self");
+            else
+                self = WebLauncher.class.getProtectionDomain().getCodeSource().getLocation().getFile();
+            String dst = params.get("output");
+            if (dst == null) {
+                dst = src.substring(0, src.lastIndexOf('.')) + "-nutzweb.war";
+            }
+            merge(params, src, self, dst);
+            return;
+        }
+    }
+    
+    public static void merge(CmdParams params, String srcA, String srcB, String target) {
+        try {
+            Files.createFileIfNoExists(target);
+            ZipInputStream zin_a = new ZipInputStream(new FileInputStream(srcA), Encoding.CHARSET_UTF8);
+            ZipInputStream zin_b = new ZipInputStream(new FileInputStream(srcB), Encoding.CHARSET_UTF8);
+            ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(target), Encoding.CHARSET_UTF8);
+            while (true) {
+                ZipEntry en = zin_a.getNextEntry();
+                if (en == null)
+                    break;
+                if (en.getName().equals("META-INF/MANIFEST.MF"))
+                    continue;
+                if (params.is("debug"))
+                    log.debug("add " + en.getName());
+                zout.putNextEntry(en);
+                Streams.write(zout, zin_a);
+                zout.closeEntry();
+            }
+            while (true) {
+                ZipEntry en = zin_b.getNextEntry();
+                if (en == null)
+                    break;
+                if (params.is("debug"))
+                    log.debug("add " + en.getName());
+                try {
+                    zout.putNextEntry(en);
+                    Streams.write(zout, zin_b);
+                    zout.closeEntry();
+                }
+                catch (Exception e) {
+                    log.info("dup ? " + en.getName());
+                }
+            }
+            zout.flush();
+            zout.finish();
+            zout.close();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public static String selfPath() {
+        try {
+            ProtectionDomain domain = WebLauncher.class.getProtectionDomain();
+            URL location = domain.getCodeSource().getLocation();
+            return location.toExternalForm();
+        }
+        catch (Exception e) {
+            return "";
+        }
     }
 }

@@ -46,24 +46,38 @@ public class WebServer {
         if (dc.getAppPort() <= 0) {
             dc.set(WebConfig.APP_PORT, "80");
         }
-        server = new Server(InetSocketAddress.createUnresolved("0.0.0.0", dc.getAppPort()));
+        if (!dc.has(WebConfig.BIND_ADDRESS))
+            dc.set(WebConfig.BIND_ADDRESS, "0.0.0.0");
+        server = new Server(InetSocketAddress.createUnresolved(dc.get(WebConfig.BIND_ADDRESS), dc.getAppPort()));
         // 设置应用上下文
         String warUrlString = null;
-        String rootPath = dc.getAppRoot();
-        File root = Files.findFile(rootPath);
-        if (root == null || !root.exists()) {
-            log.warnf("root: '%s' not exist!", dc.get(WebConfig.APP_ROOT));
-            warUrlString = Lang.runRootPath();
+        if (dc.has("war")) {
+            warUrlString = dc.get("war");
         } else {
-            warUrlString = root.toURI().toURL().toExternalForm();
+            String rootPath = dc.getAppRoot();
+            File root = Files.findFile(rootPath);
+            if (root == null || !root.exists()) {
+                log.warnf("root: '%s' not exist!", dc.get(WebConfig.APP_ROOT));
+                warUrlString = Lang.runRootPath();
+            } else {
+                warUrlString = root.toURI().toURL().toExternalForm();
+            }
         }
         log.debugf("war path : %s", warUrlString);
         WebAppContext wac = new WebAppContext(warUrlString, dc.getAppContextPath());
-        if (dc.hasAppDefaultsDescriptor()) {
-            wac.setDefaultsDescriptor(dc.getAppDefaultsDescriptor());
+        if (warUrlString.endsWith(".war")) {
+            wac.setExtractWAR(true);
+            wac.setServerClasses(new String[] { "org.objectweb.asm.", // hide asm used by jetty
+                                                    "org.eclipse.jdt.", // hide jdt used by jetty
+                                                    "org.nutz" // hide nutz classes
+                                            });
+        } else {
+            if (dc.hasAppDefaultsDescriptor()) {
+                wac.setDefaultsDescriptor(dc.getAppDefaultsDescriptor());
+            }
+            wac.setClassLoader(getClass().getClassLoader());
         }
         wac.setExtraClasspath(dc.getAppClasspath());
-        wac.setClassLoader(getClass().getClassLoader());
         wac.setConfigurationDiscovered(true);
         if (System.getProperty("os.name").toLowerCase().contains("windows")) {
             wac.setInitParameter("org.eclipse.jetty.servlet.Default.useFileMappedBuffer", "false");

@@ -35,6 +35,8 @@ public class WebConfig extends PropertiesProxy {
      * 配置文件的键名: 应用监听的端口，比如 8080
      */
     public static final String APP_PORT = "app-port";
+    
+    public static final String BIND_ADDRESS = "bind-address";
 
     /**
      * 配置文件的键名: 应用静态资源的地址前缀，比如 "http://localhost/nutz"，或者 "/rs" 等
