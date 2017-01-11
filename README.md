@@ -44,3 +44,19 @@ public class MainLauncher extends WebLauncher {
     }
 }
 ```
+
+## 将war转为runnable war
+
+首先,打包一个带依赖的nutz-web
+
+```
+mvn -Dmaven.test.skip=true clean compile assembly:single -U
+```
+
+转换war文件
+
+```
+java -jar target\nutz-web-1.r.60-SNAPSHOT-jar-with-dependencies.jar -inject nutzbook-2.9.5.war -output nutzcn.war
+```
+
+inject与output不可以相同.
