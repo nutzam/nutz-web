@@ -61,7 +61,7 @@ public class WebLauncher {
     public static void start(String... args) {
         WebConfig conf = null;
         String self = selfPath();
-        if (args == null || args.length == 0 || self.endsWith(".war")) {
+        if ((args == null || args.length == 0) && self.endsWith(".war")) {
             conf = new WebConfig(new StringReader(""));
             conf.put("war", self);
             conf.put("web-xml", self + "/WEB-INF/web.xml");
@@ -120,6 +120,12 @@ public class WebLauncher {
             }
             merge(params, src, self, dst);
             return;
+        }
+        if (params.has("war")) {
+            WebConfig conf = new WebConfig(new StringReader(""));
+            conf.set("war", params.check("war"));
+            final WebServer server = new WebServer(conf);
+            server.run();
         }
     }
     
