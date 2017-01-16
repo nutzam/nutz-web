@@ -159,7 +159,8 @@ public class WebLauncher {
                     zout.closeEntry();
                 }
                 catch (Exception e) {
-                    log.info("dup ? " + en.getName());
+                    if (!en.getName().endsWith("/"))
+                        log.info("dup ? " + en.getName());
                 }
             }
             zout.flush();
