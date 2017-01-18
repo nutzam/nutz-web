@@ -10,6 +10,7 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.util.resource.ResourceCollection;
+import org.eclipse.jetty.webapp.Configuration;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.nutz.http.Http;
 import org.nutz.http.Response;
@@ -83,22 +84,18 @@ public class WebServer {
             wac.setInitParameter("org.eclipse.jetty.servlet.Default.useFileMappedBuffer", "false");
         }
         
+        try {
+            Class.forName("org.eclipse.jetty.websocket.jsr356.server.deploy.WebSocketServerContainerInitializer", false, getClass().getClassLoader());
+            Class.forName("javax.annotation.security.RunAs", false, getClass().getClassLoader());
+            List<String> list = Configuration.ClassList.serverDefault(server);
+            list.add("org.eclipse.jetty.annotations.AnnotationConfiguration");
+            wac.setConfigurationClasses(list);
+            log.info("init websocket context success");
+        } catch (Exception e) {
+            log.info("miss some websocket class, skip websocket init");
+        }
         
         server.setHandler(wac);
-        List<String> websockets = dc.getList("websockets");
-        try {
-            Class<?> klass = Class.forName("org.eclipse.jetty.websocket.jsr356.server.deploy.WebSocketServerContainerInitializer");
-            Object tmp = klass.getMethod("configureContext", ServletContextHandler.class).invoke(null, wac);
-            java.lang.reflect.Method method = tmp.getClass().getMethod("addEndpoint", Class.class);
-            if (websockets != null) {
-                for (String name : websockets) {
-                    method.invoke(tmp, Class.forName(name));
-                }
-            }
-        }
-        catch (Exception e) {
-            log.warn("enable websocket fail", e);
-        }
         
     }
 
