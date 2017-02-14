@@ -6,6 +6,8 @@ import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.websocket.server.ServerContainer;
+
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.util.resource.ResourceCollection;
@@ -34,6 +36,10 @@ public class WebServer {
     protected WebConfig dc;
 
     protected Server server;
+    
+    boolean websocketEnable = false;
+    
+    WebAppContext wac;
 
     public WebServer(WebConfig config) {
         this.dc = config;
@@ -64,7 +70,7 @@ public class WebServer {
             }
         }
         log.debugf("war path : %s", warUrlString);
-        WebAppContext wac = new WebAppContext(warUrlString, dc.getAppContextPath());
+        wac = new WebAppContext(warUrlString, dc.getAppContextPath());
         if (warUrlString.endsWith(".war")) {
             wac.setExtractWAR(true);
             wac.setServerClasses(new String[] { "org.objectweb.asm.", // hide asm used by jetty
@@ -82,7 +88,6 @@ public class WebServer {
         if (System.getProperty("os.name").toLowerCase().contains("windows")) {
             wac.setInitParameter("org.eclipse.jetty.servlet.Default.useFileMappedBuffer", "false");
         }
-        
         try {
             Class.forName("org.eclipse.jetty.websocket.jsr356.server.deploy.WebSocketServerContainerInitializer", false, getClass().getClassLoader());
             Class.forName("javax.annotation.security.RunAs", false, getClass().getClassLoader());
@@ -90,6 +95,7 @@ public class WebServer {
             list.add("org.eclipse.jetty.annotations.AnnotationConfiguration");
             wac.setConfigurationClasses(list);
             log.info("init websocket context success");
+            websocketEnable = true;
         } catch (Exception e) {
             log.info("miss some websocket class, skip websocket init");
         }
@@ -105,6 +111,22 @@ public class WebServer {
 
             // 启动
             server.start();
+            
+
+            if (websocketEnable) {
+                List<String> websockets = dc.getList("websockets");
+                try {
+                    ServerContainer sc = (ServerContainer) wac.getAttribute(ServerContainer.class.getName());
+                    if (websockets != null) {
+                        for (String className : websockets) {
+                            sc.addEndpoint(Class.forName(className));
+                        }
+                    }
+                }
+                catch (Exception e) {
+                    log.warn("enable websocket fail", e);
+                }
+            }
 
             // 添加更多的 JSP 寻找路径
             if (dc.has("app-jsp-extpath")) {
