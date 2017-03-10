@@ -97,7 +97,8 @@ public class WebServer {
             List<String> list = Configuration.ClassList.serverDefault(server);
             list.add("org.eclipse.jetty.annotations.AnnotationConfiguration");
             wac.setConfigurationClasses(list);
-            _klass.getMethod("configureContext", ServletContextHandler.class).invoke(null, wac);
+            if (dc.has("war"))
+                _klass.getMethod("configureContext", ServletContextHandler.class).invoke(null, wac);
             log.info("init websocket context success");
             websocketEnable = true;
         } catch (Exception e) {
