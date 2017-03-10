@@ -9,6 +9,7 @@ import java.util.List;
 import javax.websocket.server.ServerContainer;
 
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.util.resource.ResourceCollection;
 import org.eclipse.jetty.webapp.Configuration;
@@ -48,6 +49,7 @@ public class WebServer {
         Webs.setProp(config);
     }
 
+    @SuppressWarnings({"rawtypes", "unchecked"})
     protected void prepare() throws IOException {
         if (dc.getAppPort() <= 0) {
             dc.set(WebConfig.APP_PORT, "80");
@@ -88,19 +90,20 @@ public class WebServer {
         if (System.getProperty("os.name").toLowerCase().contains("windows")) {
             wac.setInitParameter("org.eclipse.jetty.servlet.Default.useFileMappedBuffer", "false");
         }
+        server.setHandler(wac);
         try {
-            Class.forName("org.eclipse.jetty.websocket.jsr356.server.deploy.WebSocketServerContainerInitializer", false, getClass().getClassLoader());
+            Class _klass = Class.forName("org.eclipse.jetty.websocket.jsr356.server.deploy.WebSocketServerContainerInitializer", false, getClass().getClassLoader());
             Class.forName("javax.annotation.security.RunAs", false, getClass().getClassLoader());
             List<String> list = Configuration.ClassList.serverDefault(server);
             list.add("org.eclipse.jetty.annotations.AnnotationConfiguration");
             wac.setConfigurationClasses(list);
+            _klass.getMethod("configureContext", ServletContextHandler.class).invoke(null, wac);
             log.info("init websocket context success");
             websocketEnable = true;
         } catch (Exception e) {
-            log.info("miss some websocket class, skip websocket init");
+            log.info("miss some websocket class, skip websocket init", e);
         }
         
-        server.setHandler(wac);
         
     }
 
