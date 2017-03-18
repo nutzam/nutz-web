@@ -143,7 +143,7 @@ public class WebLauncher {
                     continue;
                 if (params.is("debug"))
                     log.debug("add " + en.getName());
-                zout.putNextEntry(en);
+                zout.putNextEntry(new ZipEntry(en.getName()));
                 Streams.write(zout, zin_a);
                 zout.closeEntry();
             }
@@ -154,7 +154,7 @@ public class WebLauncher {
                 if (params.is("debug"))
                     log.debug("add " + en.getName());
                 try {
-                    zout.putNextEntry(en);
+                    zout.putNextEntry(new ZipEntry(en.getName()));
                     Streams.write(zout, zin_b);
                     zout.closeEntry();
                 }
