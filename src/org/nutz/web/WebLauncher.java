@@ -10,6 +10,7 @@ import java.io.StringReader;
 import java.net.URL;
 import java.security.ProtectionDomain;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
@@ -61,7 +62,7 @@ public class WebLauncher {
     public static void start(String... args) {
         WebConfig conf = null;
         String self = selfPath();
-        if ((args == null || args.length == 0) && self.endsWith(".war")) {
+        if (self != null && (self.endsWith(".war") || checkWebXml(self))) {
             conf = new WebConfig(new StringReader(""));
             conf.put("war", self);
             conf.put("web-xml", self + "/WEB-INF/web.xml");
@@ -86,6 +87,19 @@ public class WebLauncher {
         server.run();
 
         log.info("Server is down!");
+    }
+
+    private static boolean checkWebXml(String self) {
+        File f = new File(self);
+        ZipFile zip = null;
+        try {
+            zip = new ZipFile(f);
+            return null != zip.getEntry("WEB-INF/web.xml");
+        } catch (Exception e) {
+            return false;
+        } finally {
+            Streams.safeClose(zip);
+        }
     }
 
     public static void startNutOnlyWebapp(String... args) {
