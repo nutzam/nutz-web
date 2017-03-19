@@ -178,6 +178,11 @@ public class WebLauncher {
                 ZipEntry en = zin_b.getNextEntry();
                 if (en == null)
                     break;
+                String name = en.getName();
+                if (!name.contains("/"))
+                    continue;
+                if (name.startsWith("org/nutz/dao") || name.startsWith("org/nutz/aop"))
+                    continue;
                 if (params.is("debug"))
                     log.debug("add " + en.getName());
                 try {

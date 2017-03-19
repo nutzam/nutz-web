@@ -75,6 +75,7 @@ public class WebServer {
         wac = new WebAppContext(warUrlString, dc.getAppContextPath());
         if (warUrlString.endsWith(".war") || dc.has("war")) {
             wac.setExtractWAR(true);
+            wac.setProtectedTargets(new String[]{"/java", "/javax", "/org", "/net", "/WEB-INF", "/META-INF"});
             wac.setTempDirectory(new File("./tmp").getAbsoluteFile());
             wac.setServerClasses(new String[] { "org.objectweb.asm.", // hide asm used by jetty
                                                     "org.eclipse.jdt.", // hide jdt used by jetty
