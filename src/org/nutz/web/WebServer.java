@@ -75,6 +75,7 @@ public class WebServer {
         wac = new WebAppContext(warUrlString, dc.getAppContextPath());
         if (warUrlString.endsWith(".war")) {
             wac.setExtractWAR(true);
+            wac.setTempDirectory(new File(warUrlString.substring(0, warUrlString.length() - 3) + ".tmp"));
             wac.setServerClasses(new String[] { "org.objectweb.asm.", // hide asm used by jetty
                                                     "org.eclipse.jdt.", // hide jdt used by jetty
                                                     "org.nutz" // hide nutz classes
