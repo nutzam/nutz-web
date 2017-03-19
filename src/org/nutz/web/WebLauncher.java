@@ -35,7 +35,11 @@ public class WebLauncher {
     private static final Log log = Logs.get();
 
     public static void main(String[] args) {
-        if (!selfPath().endsWith(".war") && args != null && args.length > 0 && args[0].startsWith("-")) {
+        String self = selfPath();
+        if (self.endsWith(".war") || checkWebXml(self)) {
+            start(args);
+        }
+        else if (args != null && args.length > 0 && args[0].startsWith("-")) {
             exec(args);
         } else {
             start(args);
