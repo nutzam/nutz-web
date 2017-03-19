@@ -37,7 +37,16 @@ public class WebLauncher {
     public static void main(String[] args) {
         String self = selfPath();
         if (self.endsWith(".war") || checkWebXml(self)) {
-            start(args);
+            WebConfig conf = null;
+            conf = new WebConfig(new StringReader(""));
+            conf.put("war", self);
+            conf.put("web-xml", self + "/WEB-INF/web.xml");
+            CmdParams params = CmdParams.parse(args, null);
+            conf.put(WebConfig.APP_PORT, params.get("port", "8080"));
+            conf.put(WebConfig.BIND_ADDRESS, params.get("bind", "0.0.0.0"));
+            conf.put(WebConfig.APP_CLASSPATH, params.get("cp", "./conf/"));
+            final WebServer server = new WebServer(conf);
+            server.run();
         }
         else if (args != null && args.length > 0 && args[0].startsWith("-")) {
             exec(args);
@@ -194,7 +203,7 @@ public class WebLauncher {
         try {
             ProtectionDomain domain = WebLauncher.class.getProtectionDomain();
             URL location = domain.getCodeSource().getLocation();
-            return location.toExternalForm();
+            return location.getFile();
         }
         catch (Exception e) {
             return "";
