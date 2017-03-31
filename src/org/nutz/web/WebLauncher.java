@@ -162,6 +162,7 @@ public class WebLauncher {
             ZipInputStream zin_a = new ZipInputStream(new FileInputStream(srcA), Encoding.CHARSET_UTF8);
             ZipInputStream zin_b = new ZipInputStream(new FileInputStream(srcB), Encoding.CHARSET_UTF8);
             ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(target), Encoding.CHARSET_UTF8);
+            zout.setLevel(0);
             while (true) {
                 ZipEntry en = zin_a.getNextEntry();
                 if (en == null)
