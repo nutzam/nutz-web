@@ -89,6 +89,11 @@
 			<artifactId>websocket-client</artifactId>
 			<version>9.4.3.v20170317</version>
 		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>apache-jstl</artifactId>
+			<version>9.4.3.v20170317</version>
+		</dependency>
 	</dependencies>
 
 	<build>
