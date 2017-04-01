@@ -3,8 +3,6 @@ package org.nutz.web;
 import java.io.IOException;
 
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.session.HashSessionManager;
-import org.eclipse.jetty.server.session.SessionHandler;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
@@ -22,7 +20,7 @@ public class NutOnlyWebServer extends WebServer {
         ctx.setContextPath("/");
         
         ctx.addServlet(DefaultServlet.class, "/*");
-        ctx.setSessionHandler(new SessionHandler(new HashSessionManager()));
+        //ctx.setSessionHandler(new SessionHandler(new HashSessionManager()));
         
         FilterHolder fh = new FilterHolder(NutFilter.class);
         fh.setInitParameter("modules", dc.get("mainModuleClassName"));
