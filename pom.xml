@@ -4,7 +4,7 @@
 	<groupId>org.nutz</groupId>
 	<artifactId>nutz-web</artifactId>
 	<name>Nutz-Web</name>
-	<version>1.r.61-SNAPSHOT</version>
+	<version>1.r.62-SNAPSHOT</version>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
