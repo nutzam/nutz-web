@@ -260,7 +260,7 @@ public class WebServer {
             String uri = req.getRequestURI();
             if (uri != null) {
                 URL u = getClass().getClassLoader().getResource(uri);
-                if (u != null && !allowPath.contains(allowPath)) {
+                if (u != null && !allowPaths.contains(allowPaths)) {
                     ((HttpServletResponse)response).setStatus(404);
                     return;
                 }
