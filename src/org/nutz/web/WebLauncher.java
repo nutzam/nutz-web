@@ -5,8 +5,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.security.ProtectionDomain;
 import java.util.zip.ZipEntry;
@@ -38,13 +41,24 @@ public class WebLauncher {
         String self = selfPath();
         if (self.endsWith(".war") || checkWebXml(self)) {
             WebConfig conf = null;
-            conf = new WebConfig(new StringReader(""));
+            InputStream ins = WebLauncher.class.getClassLoader().getResourceAsStream("web.properties");
+            if (ins == null) {
+                conf = new WebConfig(new StringReader(""));
+            } else {
+                try {
+                    conf = new WebConfig(new InputStreamReader(ins, Encoding.UTF8));
+                }
+                catch (UnsupportedEncodingException e) {
+                    throw Lang.impossible();
+                }
+            }
+            
             conf.put("war", self);
             conf.put("web-xml", self + "/WEB-INF/web.xml");
             CmdParams params = CmdParams.parse(args, null);
-            conf.put(WebConfig.APP_PORT, params.get("port", "8080"));
-            conf.put(WebConfig.BIND_ADDRESS, params.get("bind", "0.0.0.0"));
-            conf.put(WebConfig.APP_CLASSPATH, params.get("cp", "./conf/"));
+            conf.put(WebConfig.APP_PORT, params.get("port", conf.get(WebConfig.APP_PORT, "8080")));
+            conf.put(WebConfig.BIND_ADDRESS, params.get("bind", conf.get(WebConfig.BIND_ADDRESS, "0.0.0.0")));
+            conf.put(WebConfig.APP_CLASSPATH, params.get("cp", conf.get(WebConfig.APP_CLASSPATH, "./conf/")));
             final WebServer server = new WebServer(conf);
             server.run();
         }

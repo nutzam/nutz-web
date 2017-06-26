@@ -2,13 +2,30 @@ package org.nutz.web;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
+import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import javax.servlet.DispatcherType;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.websocket.server.ServerContainer;
 
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.util.resource.ResourceCollection;
@@ -16,8 +33,13 @@ import org.eclipse.jetty.webapp.Configuration;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.nutz.http.Http;
 import org.nutz.http.Response;
+import org.nutz.lang.ContinueLoop;
+import org.nutz.lang.Each;
+import org.nutz.lang.ExitLoop;
 import org.nutz.lang.Files;
 import org.nutz.lang.Lang;
+import org.nutz.lang.LoopException;
+import org.nutz.lang.Streams;
 import org.nutz.lang.Strings;
 import org.nutz.lang.socket.SocketAction;
 import org.nutz.lang.socket.SocketContext;
@@ -82,6 +104,16 @@ public class WebServer {
                                                     "org.eclipse.jdt.", // hide jdt used by jetty
                                                     "org.nutz" // hide nutz classes
                                             });
+            InputStream ins = getClass().getClassLoader().getResourceAsStream("web.allow");
+            if (ins != null) {
+                final Set<String> allowPaths = new HashSet<String>();
+                Streams.eachLine(new InputStreamReader(ins), new Each<String>() {
+                    public void invoke(int index, String ele, int length) {
+                        allowPaths.add(ele);
+                    }
+                });
+                wac.addFilter(new FilterHolder(new WebAllowFilter(allowPaths)), "/*", EnumSet.of(DispatcherType.REQUEST));
+            }
         } else {
             if (dc.hasAppDefaultsDescriptor()) {
                 wac.setDefaultsDescriptor(dc.getAppDefaultsDescriptor());
@@ -208,4 +240,35 @@ public class WebServer {
         super.finalize();
     }
 
+    public static class WebAllowFilter implements Filter {
+        
+        protected Set<String> allowPaths;
+        
+        
+        
+        public WebAllowFilter(Set<String> allowPaths) {
+            super();
+            this.allowPaths = allowPaths;
+        }
+
+        public void init(FilterConfig filterConfig){
+        }
+        
+        public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+                throws IOException, ServletException {
+            HttpServletRequest req = (HttpServletRequest)request;
+            String uri = req.getRequestURI();
+            if (uri != null) {
+                URL u = getClass().getClassLoader().getResource(uri);
+                if (u != null && !allowPath.contains(allowPath)) {
+                    ((HttpServletResponse)response).setStatus(404);
+                    return;
+                }
+            }
+            chain.doFilter(request, response);
+        }
+        
+        public void destroy() {
+        }
+    }
 }
