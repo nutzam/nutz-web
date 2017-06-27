@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
-import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -33,12 +32,9 @@ import org.eclipse.jetty.webapp.Configuration;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.nutz.http.Http;
 import org.nutz.http.Response;
-import org.nutz.lang.ContinueLoop;
 import org.nutz.lang.Each;
-import org.nutz.lang.ExitLoop;
 import org.nutz.lang.Files;
 import org.nutz.lang.Lang;
-import org.nutz.lang.LoopException;
 import org.nutz.lang.Streams;
 import org.nutz.lang.Strings;
 import org.nutz.lang.socket.SocketAction;
@@ -93,7 +89,7 @@ public class WebServer {
                 warUrlString = root.toURI().toURL().toExternalForm();
             }
         }
-        log.debugf("war path : %s", warUrlString);
+        log.debugf("++war path : %s", warUrlString);
         wac = new WebAppContext(warUrlString, dc.getAppContextPath());
         if (warUrlString.endsWith(".war") || dc.has("war")) {
             wac.setExtractWAR(false);
@@ -104,8 +100,9 @@ public class WebServer {
                                                     "org.eclipse.jdt.", // hide jdt used by jetty
                                                     "org.nutz" // hide nutz classes
                                             });
-            InputStream ins = getClass().getClassLoader().getResourceAsStream("web.allow");
+            InputStream ins = getClass().getClassLoader().getResourceAsStream("web.allows");
             if (ins != null) {
+                log.info("found web.allows");
                 final Set<String> allowPaths = new HashSet<String>();
                 Streams.eachLine(new InputStreamReader(ins), new Each<String>() {
                     public void invoke(int index, String ele, int length) {
@@ -244,10 +241,7 @@ public class WebServer {
         
         protected Set<String> allowPaths;
         
-        
-        
         public WebAllowFilter(Set<String> allowPaths) {
-            super();
             this.allowPaths = allowPaths;
         }
 
@@ -258,12 +252,14 @@ public class WebServer {
                 throws IOException, ServletException {
             HttpServletRequest req = (HttpServletRequest)request;
             String uri = req.getRequestURI();
-            if (uri != null) {
+            if (uri != null && uri.length() > 1) {
+                uri = uri.substring(1);
                 URL u = getClass().getClassLoader().getResource(uri);
-                if (u != null && !allowPaths.contains(allowPaths)) {
+                if (u != null && !allowPaths.contains(uri)) {
                     ((HttpServletResponse)response).setStatus(404);
                     return;
                 }
+                //log.debug("Pass : " + uri);
             }
             chain.doFilter(request, response);
         }

@@ -38,35 +38,7 @@ public class WebLauncher {
     private static final Log log = Logs.get();
 
     public static void main(String[] args) {
-        String self = selfPath();
-        if (self.endsWith(".war") || checkWebXml(self)) {
-            WebConfig conf = null;
-            InputStream ins = WebLauncher.class.getClassLoader().getResourceAsStream("web.properties");
-            if (ins == null) {
-                conf = new WebConfig(new StringReader(""));
-            } else {
-                try {
-                    conf = new WebConfig(new InputStreamReader(ins, Encoding.UTF8));
-                }
-                catch (UnsupportedEncodingException e) {
-                    throw Lang.impossible();
-                }
-            }
-            
-            conf.put("war", self);
-            conf.put("web-xml", self + "/WEB-INF/web.xml");
-            CmdParams params = CmdParams.parse(args, null);
-            conf.put(WebConfig.APP_PORT, params.get("port", conf.get(WebConfig.APP_PORT, "8080")));
-            conf.put(WebConfig.BIND_ADDRESS, params.get("bind", conf.get(WebConfig.BIND_ADDRESS, "0.0.0.0")));
-            conf.put(WebConfig.APP_CLASSPATH, params.get("cp", conf.get(WebConfig.APP_CLASSPATH, "./conf/")));
-            final WebServer server = new WebServer(conf);
-            server.run();
-        }
-        else if (args != null && args.length > 0 && args[0].startsWith("-")) {
-            exec(args);
-        } else {
-            start(args);
-        }
+        start(args);
     }
 
     /**
@@ -89,14 +61,27 @@ public class WebLauncher {
     public static void start(String... args) {
         WebConfig conf = null;
         String self = selfPath();
-        if (self != null && (self.endsWith(".war") || checkWebXml(self))) {
-            conf = new WebConfig(new StringReader(""));
+        if (self != null && checkWebXml(self)) {
+            InputStream ins = WebLauncher.class.getClassLoader().getResourceAsStream("web.properties");
+            if (ins == null) {
+                log.info("web.properties not found , using cmdline args");
+                conf = new WebConfig(new StringReader(""));
+            } else {
+                log.info("web.properties found");
+                try {
+                    conf = new WebConfig(new InputStreamReader(ins, Encoding.UTF8));
+                }
+                catch (UnsupportedEncodingException e) {
+                    throw Lang.impossible();
+                }
+            }
+            
             conf.put("war", self);
             conf.put("web-xml", self + "/WEB-INF/web.xml");
             CmdParams params = CmdParams.parse(args, null);
-            conf.put(WebConfig.APP_PORT, params.get("port", "8080"));
-            conf.put(WebConfig.BIND_ADDRESS, params.get("bind", "0.0.0.0"));
-            conf.put(WebConfig.APP_CLASSPATH, params.get("cp", "./conf/"));
+            conf.put(WebConfig.APP_PORT, params.get("port", conf.get(WebConfig.APP_PORT, "8080")));
+            conf.put(WebConfig.BIND_ADDRESS, params.get("bind", conf.get(WebConfig.BIND_ADDRESS, "0.0.0.0")));
+            conf.put(WebConfig.APP_CLASSPATH, params.get("cp", conf.get(WebConfig.APP_CLASSPATH, "./conf/")));
         }
         if (conf == null) {
             String path = Strings.sBlank(Lang.first(args), Webs.CONF_PATH);
