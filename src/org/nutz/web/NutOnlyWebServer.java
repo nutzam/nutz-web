@@ -20,6 +20,9 @@ public class NutOnlyWebServer extends WebServer {
         ctx.setContextPath("/");
         
         ctx.addServlet(DefaultServlet.class, "/*");
+        if (dc.containsKey("app-root")) {
+            ctx.setResourceBase(dc.get("app-root"));
+        }
         //ctx.setSessionHandler(new SessionHandler(new HashSessionManager()));
         
         FilterHolder fh = new FilterHolder(NutFilter.class);
