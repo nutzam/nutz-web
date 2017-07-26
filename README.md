@@ -15,7 +15,7 @@ A Jetty launcher + Nutz.Mvc Ajax View
 		<dependency>
 			<groupId>org.nutz</groupId>
 			<artifactId>nutz-web</artifactId>
-			<version>1.r.60</version>
+			<version>1.r.62</version>
 		</dependency>
 ```
 
@@ -56,7 +56,7 @@ mvn -Dmaven.test.skip=true clean compile assembly:single -U
 转换war文件
 
 ```
-java -jar target\nutz-web-1.r.61-SNAPSHOT-jar-with-dependencies.jar -inject nutzbook-2.9.5.war -output nutzcn.war
+java -jar target\nutz-web-1.r.63-SNAPSHOT-jar-with-dependencies.jar -inject nutzbook-2.9.5.war -output nutzcn.war
 ```
 
 inject与output不可以相同.
