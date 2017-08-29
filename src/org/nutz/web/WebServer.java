@@ -89,6 +89,7 @@ public class WebServer {
                 warUrlString = root.toURI().toURL().toExternalForm();
             }
         }
+        server.setAttribute("org.eclipse.jetty.server.Request.maxFormContentSize", 1024*1024);
         log.debugf("++war path : %s", warUrlString);
         wac = new WebAppContext(warUrlString, dc.getAppContextPath());
         if (warUrlString.endsWith(".war") || dc.has("war")) {
