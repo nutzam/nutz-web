@@ -42,6 +42,7 @@ import org.nutz.lang.socket.SocketContext;
 import org.nutz.lang.socket.Sockets;
 import org.nutz.log.Log;
 import org.nutz.log.Logs;
+import org.nutz.web.handler.JettyHandlerHook;
 
 /**
  * 这个类将调用 Jetty 的类启动一个 HTTP 服务，并提供关闭这个服务的 Socket 端口
@@ -123,7 +124,7 @@ public class WebServer {
         if (System.getProperty("os.name").toLowerCase().contains("windows")) {
             wac.setInitParameter("org.eclipse.jetty.servlet.Default.useFileMappedBuffer", "false");
         }
-        server.setHandler(wac);
+        server.setHandler(new JettyHandlerHook(server, wac));
         try {
             Class _klass = Class.forName("org.eclipse.jetty.websocket.jsr356.server.deploy.WebSocketServerContainerInitializer", false, getClass().getClassLoader());
             Class.forName("javax.annotation.security.RunAs", false, getClass().getClassLoader());
