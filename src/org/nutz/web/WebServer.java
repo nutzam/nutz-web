@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.InetSocketAddress;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -23,11 +22,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.websocket.server.ServerContainer;
 
+import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.LowResourceMonitor;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnectionStatistics;
+import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.handler.StatisticsHandler;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.util.resource.ResourceCollection;
+import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.webapp.Configuration;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.nutz.http.Http;
@@ -70,12 +75,19 @@ public class WebServer {
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     protected void prepare() throws IOException {
+        // 获取监听地址和端口
         if (dc.getAppPort() <= 0) {
             dc.set(WebConfig.APP_PORT, "80");
         }
         if (!dc.has(WebConfig.BIND_ADDRESS))
             dc.set(WebConfig.BIND_ADDRESS, "0.0.0.0");
-        server = new Server(InetSocketAddress.createUnresolved(dc.get(WebConfig.BIND_ADDRESS), dc.getAppPort()));
+        // 创建基础服务器
+        server = new Server(new QueuedThreadPool(Lang.isAndroid ? 50 : 500));
+        ServerConnector connector= new ServerConnector(server);
+        connector.setHost(dc.get(WebConfig.BIND_ADDRESS));
+        connector.setPort(dc.getAppPort());
+        server.setConnectors(new Connector[]{connector});
+        
         // 设置应用上下文
         String warUrlString = null;
         if (dc.has("war")) {
@@ -139,7 +151,25 @@ public class WebServer {
             log.info("miss some websocket class, skip websocket init", e);
         }
         
+        // Extra options
+        server.setDumpAfterStart(false);
+        server.setDumpBeforeStop(false);
+        server.setStopAtShutdown(true);
         
+        // === jetty-stats.xml ===
+        StatisticsHandler stats = new StatisticsHandler();
+        stats.setHandler(server.getHandler());
+        server.setHandler(stats);
+        ServerConnectionStatistics.addToAllConnectors(server);
+        
+        LowResourceMonitor lowResourcesMonitor=new LowResourceMonitor(server);
+        lowResourcesMonitor.setPeriod(1000);
+        lowResourcesMonitor.setLowResourcesIdleTimeout(200);
+        lowResourcesMonitor.setMonitorThreads(true);
+        lowResourcesMonitor.setMaxConnections(0);
+        lowResourcesMonitor.setMaxMemory(0);
+        lowResourcesMonitor.setMaxLowResourcesTime(5000);
+        server.addBean(lowResourcesMonitor);
     }
 
     public void run() {
@@ -169,7 +199,6 @@ public class WebServer {
             // 添加更多的 JSP 寻找路径
             if (dc.has("app-jsp-extpath")) {
                 // 基础的 app-root 作为寻找列表的第一项
-                WebAppContext wac = (WebAppContext) server.getHandler();
                 List<Resource> rs = new ArrayList<Resource>();
                 rs.add(wac.getBaseResource());
                 String[] ss = Strings.splitIgnoreBlank(dc.trim("app-jsp-extpath"), "[,\n]");
