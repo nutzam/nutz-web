@@ -4,7 +4,7 @@
 	<groupId>org.nutz</groupId>
 	<artifactId>nutz-web</artifactId>
 	<name>Nutz-Web</name>
-	<version>1.r.63-SNAPSHOT</version>
+	<version>1.r.63</version>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
@@ -51,7 +51,7 @@
 		<dependency>
 			<groupId>org.nutz</groupId>
 			<artifactId>nutz</artifactId>
-			<version>1.r.63-SNAPSHOT</version>
+			<version>1.r.63</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
