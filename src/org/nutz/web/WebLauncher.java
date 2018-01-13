@@ -59,6 +59,10 @@ public class WebLauncher {
      *            接受一个参数作为 web 服务器的配置文件路径
      */
     public static void start(String... args) {
+        if (args != null && args.length > 0 && args[0].startsWith("-")) {
+            exec(args);
+            return;
+        }
         WebConfig conf = null;
         String self = selfPath();
         if (self != null && checkWebXml(self)) {
