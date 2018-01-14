@@ -66,17 +66,23 @@ public class WebLauncher {
         WebConfig conf = null;
         String self = selfPath();
         if (self != null && checkWebXml(self)) {
-            InputStream ins = WebLauncher.class.getClassLoader().getResourceAsStream("web.properties");
-            if (ins == null) {
-                log.info("web.properties not found , using cmdline args");
-                conf = new WebConfig(new StringReader(""));
-            } else {
-                log.info("web.properties found");
-                try {
-                    conf = new WebConfig(new InputStreamReader(ins, Encoding.UTF8));
-                }
-                catch (UnsupportedEncodingException e) {
-                    throw Lang.impossible();
+            if (new File("web.properties").exists()) {
+                log.info("web.properties found at " + new File("web.properties").getAbsolutePath());
+                conf = new WebConfig("web.properties");
+            }
+            else {
+                InputStream ins = WebLauncher.class.getClassLoader().getResourceAsStream("web.properties");
+                if (ins == null) {
+                    log.info("web.properties not found , using cmdline args");
+                    conf = new WebConfig(new StringReader(""));
+                } else {
+                    log.info("web.properties found");
+                    try {
+                        conf = new WebConfig(new InputStreamReader(ins, Encoding.UTF8));
+                    }
+                    catch (UnsupportedEncodingException e) {
+                        throw Lang.impossible();
+                    }
                 }
             }
             
