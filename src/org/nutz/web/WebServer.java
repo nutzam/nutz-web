@@ -99,7 +99,7 @@ public class WebServer {
                 log.warnf("root: '%s' not exist!", dc.get(WebConfig.APP_ROOT));
                 warUrlString = Lang.runRootPath();
             } else {
-                warUrlString = root.toURI().toURL().toExternalForm();
+                warUrlString = root.getAbsoluteFile().toURI().toURL().toExternalForm();
             }
         }
         server.setAttribute("org.eclipse.jetty.server.Request.maxFormContentSize", 1024*1024);
@@ -156,20 +156,22 @@ public class WebServer {
         server.setDumpBeforeStop(false);
         server.setStopAtShutdown(true);
         
-        // === jetty-stats.xml ===
-        StatisticsHandler stats = new StatisticsHandler();
-        stats.setHandler(server.getHandler());
-        server.setHandler(stats);
-        ServerConnectionStatistics.addToAllConnectors(server);
-        
-        LowResourceMonitor lowResourcesMonitor=new LowResourceMonitor(server);
-        lowResourcesMonitor.setPeriod(1000);
-        lowResourcesMonitor.setLowResourcesIdleTimeout(200);
-        lowResourcesMonitor.setMonitorThreads(true);
-        lowResourcesMonitor.setMaxConnections(0);
-        lowResourcesMonitor.setMaxMemory(0);
-        lowResourcesMonitor.setMaxLowResourcesTime(5000);
-        server.addBean(lowResourcesMonitor);
+        if (!Lang.isAndroid) {
+            // === jetty-stats.xml ===
+            StatisticsHandler stats = new StatisticsHandler();
+            stats.setHandler(server.getHandler());
+            server.setHandler(stats);
+            ServerConnectionStatistics.addToAllConnectors(server);
+            
+            LowResourceMonitor lowResourcesMonitor=new LowResourceMonitor(server);
+            lowResourcesMonitor.setPeriod(1000);
+            lowResourcesMonitor.setLowResourcesIdleTimeout(200);
+            lowResourcesMonitor.setMonitorThreads(true);
+            lowResourcesMonitor.setMaxConnections(0);
+            lowResourcesMonitor.setMaxMemory(0);
+            lowResourcesMonitor.setMaxLowResourcesTime(5000);
+            server.addBean(lowResourcesMonitor);
+        }
     }
 
     public void run() {
