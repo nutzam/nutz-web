@@ -99,7 +99,7 @@ public class WebServer {
                 log.warnf("root: '%s' not exist!", dc.get(WebConfig.APP_ROOT));
                 warUrlString = Lang.runRootPath();
             } else {
-                warUrlString = root.getAbsoluteFile().toURI().toURL().toExternalForm();
+                warUrlString = root.getCanonicalFile().toURI().toURL().toExternalForm();
             }
         }
         server.setAttribute("org.eclipse.jetty.server.Request.maxFormContentSize", 1024*1024);
