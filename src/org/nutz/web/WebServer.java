@@ -28,6 +28,7 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnectionStatistics;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.StatisticsHandler;
+import org.eclipse.jetty.server.handler.gzip.GzipHandler;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.util.resource.Resource;
@@ -136,7 +137,15 @@ public class WebServer {
         if (System.getProperty("os.name").toLowerCase().contains("windows")) {
             wac.setInitParameter("org.eclipse.jetty.servlet.Default.useFileMappedBuffer", "false");
         }
-        server.setHandler(new JettyHandlerHook(server, wac));
+        if (dc.getBoolean("gzip-enable", true)) {
+            GzipHandler gzip = new GzipHandler();
+            gzip.setMinGzipSize(512);
+            gzip.setHandler(new JettyHandlerHook(server, wac));
+            server.setHandler(gzip);
+        }
+        else {
+            server.setHandler(new JettyHandlerHook(server, wac));
+        }
         try {
             Class _klass = Class.forName("org.eclipse.jetty.websocket.jsr356.server.deploy.WebSocketServerContainerInitializer", false, getClass().getClassLoader());
             Class.forName("javax.annotation.security.RunAs", false, getClass().getClassLoader());
