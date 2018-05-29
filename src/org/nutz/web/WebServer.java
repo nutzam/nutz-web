@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.websocket.server.ServerContainer;
 
+import org.eclipse.jetty.http.CompressedContentFormat;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.LowResourceMonitor;
 import org.eclipse.jetty.server.Server;
@@ -41,6 +42,7 @@ import org.nutz.http.Response;
 import org.nutz.lang.Each;
 import org.nutz.lang.Files;
 import org.nutz.lang.Lang;
+import org.nutz.lang.Mirror;
 import org.nutz.lang.Streams;
 import org.nutz.lang.Strings;
 import org.nutz.lang.socket.SocketAction;
@@ -138,6 +140,8 @@ public class WebServer {
             wac.setInitParameter("org.eclipse.jetty.servlet.Default.useFileMappedBuffer", "false");
         }
         if (dc.getBoolean("gzip-enable", true)) {
+            Mirror.me(CompressedContentFormat.class).setValue(CompressedContentFormat.GZIP, "_etag", "");
+            Mirror.me(CompressedContentFormat.class).setValue(CompressedContentFormat.GZIP, "_etagQuote", "\"");
             GzipHandler gzip = new GzipHandler();
             gzip.setMinGzipSize(512);
             gzip.setHandler(new JettyHandlerHook(server, wac));
