@@ -104,6 +104,10 @@ public class WebLauncher {
                 conf = new WebConfig(r);
             }
         }
+        // 系统属性
+        conf.putAll(System.getProperties());
+        // 环境变量
+        conf.putAll(System.getenv());
         
         final WebServer server = new WebServer(conf);
         server.run();
