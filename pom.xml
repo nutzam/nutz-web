@@ -7,14 +7,14 @@
 	<version>1.r.68-SNAPSHOT</version>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<jetty.version>9.4.14.v20181114</jetty.version>
+		<jetty.version>9.4.28.v20200408</jetty.version>
 	</properties>
-	<description>Nutz, which is a collections of lightweight frameworks, each of them can be used independently</description>
+	<description>Nutz Web is a Jetty launcher</description>
 
-	<url>http://nutz.googlecode.com</url>
+	<url>https://github/nutzam/nutz-web</url>
 	<issueManagement>
 		<system>Github Issue</system>
-		<url>http://github.com/nutzam/nutz/issues</url>
+		<url>http://github.com/nutzam/nutz-web/issues</url>
 	</issueManagement>
 	<licenses>
 		<license>
@@ -34,12 +34,6 @@
 			<name>Wendal Chen</name>
 			<email>wendal1985@gmail.com</email>
 			<url>http://wendal.net/</url>
-		</developer>
-		<developer>
-			<id>juqkai</id>
-			<name>Juqkai</name>
-			<email>Bird.Wyatt@gmail.com</email>
-			<url>https://github.com/juqkai</url>
 		</developer>
 	</developers>
 	<scm>
